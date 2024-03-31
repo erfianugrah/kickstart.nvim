@@ -12,7 +12,13 @@ return {
       'MunifTanjim/nui.nvim',
     },
     config = function()
-      require('neo-tree').setup {}
+      require('neo-tree').setup {
+        filesystem = {
+          filtered_items = {
+            hide_hidden = false,
+          },
+        },
+      }
     end,
   },
   {
@@ -25,6 +31,17 @@ return {
       local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
       local cmp = require 'cmp'
       cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+    end,
+  },
+  {
+    's1n7ax/nvim-window-picker',
+    name = 'window-picker',
+    event = 'VeryLazy',
+    version = '2.*',
+    config = function()
+      require('window-picker').setup {
+        hint = 'statusline-winbar',
+      }
     end,
   },
 }
