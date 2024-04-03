@@ -227,7 +227,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-
+  'jxnblk/vim-mdx-js',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -554,6 +554,7 @@ require('lazy').setup({
         docker_compose_language_service = {},
         dockerls = {},
         marksman = {},
+        remark_ls = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -822,7 +823,6 @@ require('lazy').setup({
         'lua',
         'luadoc',
         'markdown',
-        'mermaid',
         'vim',
         'vimdoc',
         'astro',
@@ -851,7 +851,7 @@ require('lazy').setup({
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
-
+      vim.treesitter.language.register('markdown', 'mdx')
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
       --
