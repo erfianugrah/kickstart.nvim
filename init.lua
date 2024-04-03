@@ -822,7 +822,6 @@ require('lazy').setup({
         'lua',
         'luadoc',
         'markdown',
-        'markdown_inline',
         'mermaid',
         'vim',
         'vimdoc',
