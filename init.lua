@@ -554,7 +554,6 @@ require('lazy').setup({
         tailwindcss = {},
         docker_compose_language_service = {},
         dockerls = {},
-        marksman = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -823,7 +822,6 @@ require('lazy').setup({
         'lua',
         'luadoc',
         'markdown',
-        'markdown_inline',
         'mermaid',
         'vim',
         'vimdoc',
