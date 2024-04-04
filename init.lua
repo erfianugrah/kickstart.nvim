@@ -833,6 +833,7 @@ require('lazy').setup({
         'sql',
         'typescript',
         'yaml',
+        'mermaid',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
