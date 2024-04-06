@@ -85,7 +85,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
 --Spellcheck
-vim.opt.spelllang = 'en_sg'
+vim.opt.spelllang = 'en_gb'
 vim.opt.spell = true
 vim.opt.mousemodel = 'popup'
 
