@@ -555,6 +555,12 @@ require('lazy').setup({
         docker_compose_language_service = {},
         dockerls = {},
         marksman = {},
+        eslint = {},
+        mdx_analyzer = {},
+        sqlls = {},
+        textlsp = {},
+        yamlls = {},
+
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
