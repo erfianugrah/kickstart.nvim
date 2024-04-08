@@ -83,6 +83,8 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+--Logging
+vim.lsp.set_log_level 'debug'
 
 --Spellcheck
 vim.opt.spelllang = 'en_gb'
@@ -558,12 +560,10 @@ require('lazy').setup({
         tailwindcss = {},
         docker_compose_language_service = {},
         dockerls = {},
-        marksman = {},
         eslint = {},
         mdx_analyzer = {},
         sqlls = {},
         ansiblels = {},
-        grammarly = {},
         jqls = {},
         vale_ls = {},
         rust_analyzer = {},
