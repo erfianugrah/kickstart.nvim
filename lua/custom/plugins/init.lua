@@ -80,9 +80,9 @@ return {
   {
     'David-Kunz/gen.nvim',
     opts = {
-      model = 'dolphin-mixtral', -- The default model to use.
-      host = 'localhost', -- The host running the Ollama service.
-      port = '11434', -- The port on which the Ollama service is listening.
+      model = 'dolphin-mistral', -- The default model to use.
+      host = 'ollama.erfianugrah.com', -- The host running the Ollama service.
+      port = '443', -- The port on which the Ollama service is listening.
       quit_map = 'q', -- set keymap for close the response window
       retry_map = '<c-r>', -- set keymap to re-send the current prompt
       init = function(options)
@@ -97,13 +97,17 @@ return {
           ['CF-Access-Client-Id'] = client_id,
           ['CF-Access-Client-Secret'] = client_secret,
         }
-        return 'curl --silent --no-buffer -X POST http://' .. options.host .. ':' .. options.port .. '/api/chat -d $body'
-        -- .. ' -H "CF-Access-Client-Id: '
-        -- .. client_id
-        -- .. '"'
-        -- .. ' -H "CF-Access-Client-Secret: '
-        -- .. client_secret
-        -- .. '"'
+        return 'curl --silent --no-buffer -X POST http://'
+          .. options.host
+          .. ':'
+          .. options.port
+          .. '/api/chat -d $body'
+          .. ' -H "CF-Access-Client-Id: '
+          .. client_id
+          .. '"'
+          .. ' -H "CF-Access-Client-Secret: '
+          .. client_secret
+          .. '"'
       end,
       -- The command for the Ollama service. You can use placeholders $prompt, $model and $body (shellescaped).
       -- This can also be a command string.
