@@ -97,7 +97,7 @@ return {
           ['CF-Access-Client-Id'] = client_id,
           ['CF-Access-Client-Secret'] = client_secret,
         }
-        return 'curl --silent --no-buffer -X POST http://'
+        return 'curl --silent --no-buffer -X POST https://'
           .. options.host
           .. ':'
           .. options.port
