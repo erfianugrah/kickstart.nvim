@@ -121,5 +121,4 @@ return {
       debug = true, -- Prints errors and the command which is run.
     },
   },
-  { 'akinsho/toggleterm.nvim', version = '*', config = true },
 }
