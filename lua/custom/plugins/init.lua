@@ -121,4 +121,5 @@ return {
       debug = true, -- Prints errors and the command which is run.
     },
   },
+  { 'brenoprata10/nvim-highlight-colors' },
 }
