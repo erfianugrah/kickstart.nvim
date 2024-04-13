@@ -236,6 +236,7 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'jxnblk/vim-mdx-js',
   'tpope/vim-fugitive',
+  'ms-jpq/coq_nvim',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -849,6 +850,9 @@ require('lazy').setup({
         'typescript',
         'yaml',
         'mermaid',
+        'xml',
+        'http',
+        'graphql',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
