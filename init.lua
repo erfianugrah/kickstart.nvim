@@ -11,7 +11,7 @@
 ========         ||                    ||   | === |          ========
 ========         ||                    ||   |-----|          ========
 ========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
+======g=         |'-..................-'|   |____o|          ========
 ========         `"")----------------(""`   ___________      ========
 ========        /::::::::::|  |::::::::::\  \ no mouse \     ========
 ========       /:::========|  |==hjkl==:::\  \ required \    ========
@@ -83,6 +83,9 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+--UndoTree
+vim.keymap.set('n', '<leader>T', vim.cmd.UndotreeToggle)
+
 --Logging
 vim.lsp.set_log_level 'debug'
 
@@ -109,7 +112,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -237,6 +240,7 @@ require('lazy').setup({
   'jxnblk/vim-mdx-js',
   'tpope/vim-fugitive',
   'ms-jpq/coq_nvim',
+  'mbbill/undotree',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -550,7 +554,6 @@ require('lazy').setup({
         astro = {},
         cssls = {},
         jsonls = {},
-        typos_lsp = {},
         graphql = {},
         yamlls = {},
         bashls = {},
