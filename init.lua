@@ -87,7 +87,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.keymap.set('n', '<leader>T', vim.cmd.UndotreeToggle)
 
 --Logging
-vim.lsp.set_log_level 'debug'
+vim.lsp.set_log_level 'off'
 
 --Spellcheck
 vim.opt.spelllang = 'en_gb'
