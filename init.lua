@@ -84,7 +84,7 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 --UndoTree
-vim.keymap.set('n', '<leader>T', vim.cmd.UndotreeToggle)
+vim.keymap.set('n', '<leader><T>', vim.cmd.UndotreeToggle)
 
 --Logging
 vim.lsp.set_log_level 'off'
