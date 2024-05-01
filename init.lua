@@ -83,6 +83,7 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+
 --UndoTree
 vim.keymap.set('n', '<leader>T', vim.cmd.UndotreeToggle)
 
@@ -93,6 +94,7 @@ vim.lsp.set_log_level 'off'
 vim.opt.spelllang = 'en_gb'
 vim.opt.spell = true
 vim.opt.mousemodel = 'popup'
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
