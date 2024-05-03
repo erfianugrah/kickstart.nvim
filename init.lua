@@ -598,11 +598,9 @@ require('lazy').setup({
         sqlls = {},
         ansiblels = {},
         jqls = {},
-        vale_ls = {},
         rust_analyzer = {},
         ltex = {},
-        grammarly = {},
-
+        marksman = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -639,6 +637,9 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'markdownlint',
         'yamllint',
+        'hadolint',
+        'tflint',
+        'jsonlint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
