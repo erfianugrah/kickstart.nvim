@@ -84,9 +84,6 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
---UndoTree
-vim.keymap.set('n', '<leader>T', vim.cmd.UndotreeToggle)
-
 --Logging
 vim.lsp.set_log_level 'off'
 
@@ -163,12 +160,15 @@ vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 20
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
+--UndoTree
+vim.keymap.set('n', '<leader>T', vim.cmd.UndotreeToggle)
+
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
@@ -242,8 +242,6 @@ require('lazy').setup({
   'tpope/vim-fugitive',
   'ms-jpq/coq_nvim',
   'mbbill/undotree',
-  'tpope/vim-markdown',
-  'preservim/vim-colors-pencil',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
