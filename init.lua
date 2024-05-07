@@ -873,6 +873,7 @@ require('lazy').setup({
         'c',
         'html',
         'lua',
+        'diff',
         'luadoc',
         'markdown',
         'markdown_inline',
