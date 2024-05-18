@@ -606,6 +606,7 @@ require('lazy').setup({
         pyright = {},
         terraformls = {},
         tsserver = {},
+        tailwindcss = {},
         docker_compose_language_service = {},
         dockerls = {},
         eslint = {},
@@ -615,6 +616,7 @@ require('lazy').setup({
         jqls = {},
         rust_analyzer = {},
         ltex = {},
+        marksman = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
