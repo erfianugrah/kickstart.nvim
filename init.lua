@@ -606,7 +606,6 @@ require('lazy').setup({
         pyright = {},
         terraformls = {},
         tsserver = {},
-        tailwindcss = {},
         docker_compose_language_service = {},
         dockerls = {},
         eslint = {},
