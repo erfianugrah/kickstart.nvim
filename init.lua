@@ -601,15 +601,14 @@ require('lazy').setup({
           },
         },
         bashls = {},
-        denols = {},
         gopls = {},
         pyright = {},
         terraformls = {},
         tsserver = {},
+        denols = {},
         tailwindcss = {},
         docker_compose_language_service = {},
         dockerls = {},
-        eslint = {},
         mdx_analyzer = {},
         sqlls = {},
         ansiblels = {},
@@ -617,6 +616,8 @@ require('lazy').setup({
         rust_analyzer = {},
         ltex = {},
         marksman = {},
+        markdown_oxide = {},
+        html = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -656,6 +657,9 @@ require('lazy').setup({
         'hadolint',
         'tflint',
         'jsonlint',
+        -- 'prettier',
+        -- 'prettierd',
+        -- 'eslint_d',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -706,7 +710,7 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        javascript = { { 'prettierd', 'prettier' } },
+        -- javascript = { { 'prettier_d' } },
       },
     },
   },
