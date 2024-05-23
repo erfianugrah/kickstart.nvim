@@ -657,9 +657,9 @@ require('lazy').setup({
         'hadolint',
         'tflint',
         'jsonlint',
-        -- 'prettier',
-        -- 'prettierd',
-        -- 'eslint_d',
+        'prettier',
+        'prettierd',
+        'eslint_d',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -710,7 +710,7 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { 'prettier_d' } },
+        -- javascript = { { 'prettier_d', 'prettier', 'eslint_d' } },
       },
     },
   },
