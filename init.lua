@@ -711,7 +711,7 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        javascript = { 'prettier_d', 'prettier', 'eslint_d' },
+        -- javascript = { 'prettier_d', 'prettier', 'eslint_d' },
       },
     },
   },
@@ -913,6 +913,7 @@ require('lazy').setup({
         'xml',
         'http',
         'graphql',
+        'astro',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
