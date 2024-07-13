@@ -612,7 +612,12 @@ require('lazy').setup({
         gopls = {},
         pyright = {},
         terraformls = {},
-        tsserver = {},
+        tsserver = {
+          on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
+        },
         denols = {},
         tailwindcss = {},
         docker_compose_language_service = {},
@@ -685,7 +690,6 @@ require('lazy').setup({
       }
     end,
   },
-
   { -- Autoformat
     'stevearc/conform.nvim',
     lazy = false,
@@ -713,17 +717,31 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- astro = { 'prettier', 'prettier_d', 'eslint_d' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        javascript = { 'prettier_d', 'prettier', 'eslint_d' },
+        javascript = { 'prettier' },
+        typescript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescriptreact = { 'prettier' },
+      },
+      formatters = {
+        prettier = {
+          command = 'prettier',
+          args = {
+            '--stdin-filepath',
+            '$FILENAME',
+            '--single-quote',
+            '--jsx-single-quote',
+            '--trailing-comma',
+            'es5',
+            '--tab-width',
+            '2',
+            '--print-width',
+            '100',
+          },
+          stdin = true,
+        },
       },
     },
   },
-
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
