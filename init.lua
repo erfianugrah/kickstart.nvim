@@ -618,7 +618,12 @@ require('lazy').setup({
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
         },
-        denols = {},
+        denols = {
+          on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
+        },
         tailwindcss = {},
         docker_compose_language_service = {},
         dockerls = {},
@@ -671,8 +676,6 @@ require('lazy').setup({
         'tflint',
         'jsonlint',
         'prettier',
-        'prettierd',
-        'eslint_d',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -721,6 +724,7 @@ require('lazy').setup({
         typescript = { 'prettier' },
         javascriptreact = { 'prettier' },
         typescriptreact = { 'prettier' },
+        astro = { 'astro' },
       },
       formatters = {
         prettier = {
@@ -734,6 +738,8 @@ require('lazy').setup({
             'es5',
             '--tab-width',
             '2',
+            '--use-tabs',
+            'false',
             '--print-width',
             '100',
           },
