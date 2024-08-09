@@ -85,7 +85,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
 --Logging
-vim.lsp.set_log_level 'off'
+vim.lsp.set_log_level 'debug'
 
 --Spellcheck
 vim.opt.spelllang = 'en_gb'
@@ -632,7 +632,9 @@ require('lazy').setup({
         ansiblels = {},
         jqls = {},
         rust_analyzer = {},
-        ltex = {},
+        ltex = {
+          filetypes = { 'latex', 'tex', 'bib', 'markdown', 'gitcommit', 'text', 'mdx' },
+        },
         marksman = {},
         markdown_oxide = {},
         html = {},
