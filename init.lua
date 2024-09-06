@@ -612,7 +612,7 @@ require('lazy').setup({
         gopls = {},
         pyright = {},
         terraformls = {},
-        tsserver = {
+        ts_lsp = {
           on_attach = function(client)
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false

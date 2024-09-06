@@ -166,6 +166,7 @@ return {
       { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
     },
   },
+  { 'sindrets/diffview.nvim' },
   -- {
   --   'tris203/precognition.nvim',
   --   --event = "VeryLazy",
