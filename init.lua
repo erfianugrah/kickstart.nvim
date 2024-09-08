@@ -1002,6 +1002,13 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    incremental_selection = {
+      enable = true,
+    },
+    -- Make sure this is enabled
+    injections = {
+      enable = true,
+    },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
@@ -1016,6 +1023,57 @@ require('lazy').setup({
       --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
       --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+      vim.treesitter.query.set(
+        'javascript',
+        'injections',
+        [[
+  (
+    (template_string
+      (string_fragment) @injection.content
+    )
+    (
+      (#match? @injection.content "<script")
+      (#set! injection.language "javascript")
+    )
+  )
+  (
+    (template_string
+      (string_fragment) @injection.content
+    )
+    (
+      (#match? @injection.content "function")
+      (#set! injection.language "javascript")
+    )
+  )
+  (
+    (template_string
+      (string_fragment) @injection.content
+    )
+    (
+      (#match? @injection.content "const")
+      (#set! injection.language "javascript")
+    )
+  )
+  (
+    (template_string
+      (string_fragment) @injection.content
+    )
+    (
+      (#match? @injection.content "<style")
+      (#set! injection.language "css")
+    )
+  )
+  (
+    (template_string
+      (string_fragment) @injection.content
+    )
+    (
+      (#match? @injection.content "<")
+      (#set! injection.language "html")
+    )
+  )
+]]
+      )
     end,
   },
 
