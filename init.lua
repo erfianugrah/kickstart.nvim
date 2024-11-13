@@ -764,10 +764,11 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        javascript = { 'prettier' },
-        typescript = { 'prettier' },
-        tsx = { 'prettier' },
-        jsx = { 'prettier' },
+        javascript = { 'denols' },
+        typescript = { 'denols' },
+        tsx = { 'denols' },
+        jsx = { 'denols' },
+        svelte = { 'denols' },
         astro = { 'astro' },
       },
       formatters = {
@@ -787,6 +788,11 @@ require('lazy').setup({
             '--print-width',
             '100',
           },
+          stdin = true,
+        },
+        denols = {
+          command = 'deno',
+          args = { 'fmt', '-' },
           stdin = true,
         },
       },
@@ -1033,24 +1039,6 @@ require('lazy').setup({
     )
     (
       (#match? @injection.content "<script")
-      (#set! injection.language "javascript")
-    )
-  )
-  (
-    (template_string
-      (string_fragment) @injection.content
-    )
-    (
-      (#match? @injection.content "function")
-      (#set! injection.language "javascript")
-    )
-  )
-  (
-    (template_string
-      (string_fragment) @injection.content
-    )
-    (
-      (#match? @injection.content "const")
       (#set! injection.language "javascript")
     )
   )
