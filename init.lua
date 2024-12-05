@@ -677,6 +677,7 @@ require('lazy').setup({
         },
         marksman = {},
         markdown_oxide = {},
+        clangd = {},
         html = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
