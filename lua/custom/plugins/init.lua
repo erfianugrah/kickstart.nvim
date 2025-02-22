@@ -107,7 +107,7 @@ return {
   {
     'David-Kunz/gen.nvim',
     opts = {
-      model = 'dolphin-mistral', -- The default model to use.
+      model = 'deepseek-r1:14b', -- The default model to use.
       host = 'ollama.erfianugrah.com', -- The host running the Ollama service.
       port = '443', -- The port on which the Ollama service is listening.
       quit_map = 'q', -- set keymap for close the response window
