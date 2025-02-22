@@ -664,7 +664,9 @@ require('lazy').setup({
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
         },
-        tailwindcss = {},
+        tailwindcss = {
+          filetypes = { 'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'astro' },
+        },
         docker_compose_language_service = {},
         dockerls = {},
         mdx_analyzer = {},
