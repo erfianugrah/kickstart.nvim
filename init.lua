@@ -85,7 +85,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
 --Logging
-vim.lsp.set_log_level 'debug'
+vim.lsp.set_log_level 'error'
 
 --Spellcheck
 vim.opt.spelllang = 'en_gb'
