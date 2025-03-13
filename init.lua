@@ -990,6 +990,7 @@ require('lazy').setup({
         'csv',
         'javascript',
         'json',
+        'jsonc',
         'terraform',
         'sql',
         'typescript',
@@ -1113,4 +1114,15 @@ require('lazy').setup({
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
+-- Configure Treesitter-based folding for JSON files
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"json", "jsonc"},
+  callback = function()
+    vim.opt_local.foldmethod = "expr"
+    vim.opt_local.foldexpr = "nvim_treesitter#foldexpr()"
+    -- Start with folds open
+    vim.opt_local.foldenable = false
+  end
+})
+
 -- vim: ts=2 sts=2 sw=2 et
