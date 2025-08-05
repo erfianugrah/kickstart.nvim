@@ -992,7 +992,6 @@ require('lazy').setup({
         'json',
         'jsonc',
         'terraform',
-        'tofu',
         'sql',
         'typescript',
         'yaml',
