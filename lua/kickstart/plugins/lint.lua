@@ -57,7 +57,11 @@ return {
           for _, linter in ipairs(linters) do
             local linter_config = require('lint').linters[linter]
             local cmd = linter_config and linter_config.cmd
-            if cmd and vim.fn.executable(cmd) == 1 then
+            -- cmd can be a string or a function, resolve it first
+            if type(cmd) == 'function' then
+              cmd = cmd()
+            end
+            if type(cmd) == 'string' and vim.fn.executable(cmd) == 1 then
               table.insert(available_linters, linter)
             end
           end
