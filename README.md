@@ -1,4 +1,18 @@
-# kickstart.nvim
+# kickstart.nvim (erfi's fork)
+
+Personal fork of [nvim-lua/kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim) with additional customizations.
+
+## What's Different From Upstream
+
+- **Additional LSP servers**: astro, tailwindcss, denols, graphql, yamlls, dockerls, terraform, and more
+- **Custom formatters**: prettier, deno fmt
+- **Extra plugins**: vim-fugitive, undotree, vim-mdx-js, quarto, atac
+- **Treesitter**: Extended language support with custom injection queries for template literals
+- **Linting**: eslint, markdownlint, hadolint, tflint, jsonlint, yamllint
+
+Works on all platforms (Linux, macOS, Windows/WSL).
+
+---
 
 ## Introduction
 
@@ -74,7 +88,7 @@ too - it's ignored in the kickstart repo to make maintenance easier, but it's
 <details><summary> Linux and Mac </summary>
 
 ```sh
-git clone -b windows https://github.com/erfianugrah/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+git clone https://github.com/erfianugrah/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 ```
 
 </details>
@@ -84,13 +98,13 @@ git clone -b windows https://github.com/erfianugrah/kickstart.nvim.git "${XDG_CO
 If you're using `cmd.exe`:
 
 ```
-git clone https://github.com/nvim-lua/kickstart.nvim.git "%localappdata%\nvim"
+git clone https://github.com/erfianugrah/kickstart.nvim.git "%localappdata%\nvim"
 ```
 
 If you're using `powershell.exe`
 
 ```
-git clone https://github.com/nvim-lua/kickstart.nvim.git "${env:LOCALAPPDATA}\nvim"
+git clone https://github.com/erfianugrah/kickstart.nvim.git "${env:LOCALAPPDATA}\nvim"
 ```
 
 </details>
