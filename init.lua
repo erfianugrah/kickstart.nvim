@@ -720,15 +720,46 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
+          root_dir = require('lspconfig').util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json'),
+          single_file_support = false, -- Prevent ts_ls from attaching to deno projects
         },
         denols = {
           on_attach = function(client)
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
+          root_dir = require('lspconfig').util.root_pattern('deno.json', 'deno.jsonc'),
+          settings = {
+            deno = {
+              enable = true,
+              lint = true,
+              unstable = true,
+              documentPreloadLimit = 2000,
+            },
+          },
         },
         tailwindcss = {
           filetypes = { 'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'astro' },
+          root_dir = require('lspconfig').util.root_pattern(
+            'tailwind.config.js',
+            'tailwind.config.cjs',
+            'tailwind.config.mjs',
+            'tailwind.config.ts',
+            'postcss.config.js',
+            'postcss.config.cjs',
+            'postcss.config.mjs',
+            'postcss.config.ts'
+          ),
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  { 'cva\\(([^)]*)\\)', '["\'`]([^"\'`]*).*?["\'`]' },
+                  { 'cx\\(([^)]*)\\)', "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                },
+              },
+            },
+          },
         },
         docker_compose_language_service = {},
         dockerls = {},

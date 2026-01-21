@@ -42,12 +42,15 @@ return {
   },
   {
     'preservim/vim-pencil',
+    cmd = { 'Pencil', 'PencilOff', 'PencilToggle', 'PencilSoft', 'PencilHard' },
+    ft = { 'markdown', 'text', 'tex' },
     init = function()
       vim.g['pencil#wrapModeDefault'] = 'soft'
     end,
   },
   {
     'folke/twilight.nvim',
+    cmd = { 'Twilight', 'TwilightEnable', 'TwilightDisable' },
     opts = {
       -- your configuration comes here
       -- or leave it empty to use the default settings
@@ -56,6 +59,7 @@ return {
   },
   {
     'folke/zen-mode.nvim',
+    cmd = 'ZenMode',
     opts = {
       width = 150,
       wezterm = {
@@ -149,7 +153,15 @@ return {
       debug = true, -- Prints errors and the command which is run.
     },
   },
-  { 'brenoprata10/nvim-highlight-colors' },
+  {
+    'brenoprata10/nvim-highlight-colors',
+    event = { 'BufReadPre', 'BufNewFile' },
+    opts = {
+      render = 'virtual',
+      enable_named_colors = true,
+      enable_tailwind = true,
+    },
+  },
   {
     'christoomey/vim-tmux-navigator',
     cmd = {
@@ -167,7 +179,10 @@ return {
       { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
     },
   },
-  { 'sindrets/diffview.nvim' },
+  {
+    'sindrets/diffview.nvim',
+    cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewToggleFiles', 'DiffviewFocusFiles', 'DiffviewFileHistory' },
+  },
   -- {
   --   'tris203/precognition.nvim',
   --   --event = "VeryLazy",
