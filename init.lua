@@ -132,6 +132,10 @@ vim.o.breakindent = true
 -- Save undo history
 vim.o.undofile = true
 
+-- Disable swap files to prevent TUI crash (race condition in swap dialog)
+-- Undo files above provide crash recovery instead
+vim.o.swapfile = false
+
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
