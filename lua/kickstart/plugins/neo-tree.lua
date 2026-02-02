@@ -26,6 +26,9 @@ return {
         hide_dotfiles = false,
         hide_gitignored = true,
       },
+      -- Improve handling of external file changes
+      use_libuv_file_watcher = true,
+      bind_to_cwd = false,
     },
   },
 }

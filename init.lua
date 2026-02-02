@@ -762,6 +762,16 @@ require('lazy').setup({
                   { 'cx\\(([^)]*)\\)', "(?:'|\"|`)([^']*)(?:'|\"|`)" },
                 },
               },
+              -- Exclude directories from scanning to reduce errors and improve performance
+              files = {
+                exclude = {
+                  '**/.git/**',
+                  '**/node_modules/**',
+                  '**/.hg/**',
+                  '**/.svn/**',
+                  '**/.bun/**',
+                },
+              },
             },
           },
         },
@@ -774,6 +784,10 @@ require('lazy').setup({
         rust_analyzer = {},
         ltex = {
           filetypes = { 'latex', 'tex', 'bib', 'markdown', 'gitcommit', 'text', 'mdx' },
+          cmd_env = {
+            -- Fix for Java XML entity size limit error that crashes ltex-ls
+            JAVA_OPTS = '-Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0',
+          },
         },
         marksman = {},
         markdown_oxide = {},
