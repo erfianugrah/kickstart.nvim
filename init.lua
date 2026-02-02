@@ -782,13 +782,7 @@ require('lazy').setup({
         ansiblels = {},
         jqls = {},
         rust_analyzer = {},
-        ltex = {
-          filetypes = { 'latex', 'tex', 'bib', 'markdown', 'gitcommit', 'text', 'mdx' },
-          cmd_env = {
-            -- Fix for Java XML entity size limit error that crashes ltex-ls
-            JAVA_OPTS = '-Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0',
-          },
-        },
+
         marksman = {},
         markdown_oxide = {},
         clangd = {},
@@ -846,17 +840,14 @@ require('lazy').setup({
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
       }
+
+      -- Setup servers using new vim.lsp API (matches latest kickstart.nvim)
+      for name, config in pairs(servers) do
+        config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
+        vim.lsp.config(name, config)
+        vim.lsp.enable(name)
+      end
     end,
   },
   { -- Autoformat
