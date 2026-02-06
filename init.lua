@@ -652,6 +652,7 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
+          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
           root_dir = require('lspconfig').util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json'),
           single_file_support = false, -- Prevent ts_ls from attaching to deno projects
         },
@@ -660,6 +661,7 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
+          filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
           root_dir = require('lspconfig').util.root_pattern('deno.json', 'deno.jsonc'),
           settings = {
             deno = {
