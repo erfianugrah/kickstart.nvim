@@ -731,9 +731,17 @@ require('lazy').setup({
       --    :Mason
       --
       -- You can press `g?` for help in this menu.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'lua_ls', -- Lua Language server
+      local ensure_installed = {}
+      local seen = {}
+      local function add_tool(name)
+        if not name or name == '' or seen[name] then
+          return
+        end
+        seen[name] = true
+        table.insert(ensure_installed, name)
+      end
+
+      for _, tool in ipairs({
         'stylua', -- Used to format Lua code
         'markdownlint',
         'yamllint',
@@ -741,7 +749,41 @@ require('lazy').setup({
         'tflint',
         'jsonlint',
         'prettier',
-      })
+      }) do
+        add_tool(tool)
+      end
+
+      local mason_registry = require 'mason-registry'
+      local lsp_to_package = {
+        rust_analyzer = 'rust-analyzer',
+        ts_ls = 'typescript-language-server',
+        lua_ls = 'lua-language-server',
+        jsonls = 'json-lsp',
+        yamlls = 'yaml-language-server',
+        bashls = 'bash-language-server',
+        cssls = 'css-lsp',
+        html = 'html-lsp',
+        dockerls = 'dockerfile-language-server',
+        docker_compose_language_service = 'docker-compose-language-service',
+        tailwindcss = 'tailwindcss-language-server',
+        graphql = 'graphql-language-service-cli',
+        sqlls = 'sql-language-server',
+        ansiblels = 'ansible-language-server',
+        clangd = 'clangd',
+        gopls = 'gopls',
+        pyright = 'pyright',
+        terraformls = 'terraform-ls',
+        denols = 'deno',
+        marksman = 'marksman',
+      }
+
+      for server_name in pairs(servers or {}) do
+        local package_name = lsp_to_package[server_name] or server_name
+        local ok = pcall(mason_registry.get_package, package_name)
+        if ok then
+          add_tool(package_name)
+        end
+      end
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
