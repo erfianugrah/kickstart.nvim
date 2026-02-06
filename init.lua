@@ -785,6 +785,14 @@ require('lazy').setup({
         end
       end
 
+      local filtered_tools = {}
+      for _, tool in ipairs(ensure_installed) do
+        if pcall(mason_registry.get_package, tool) then
+          table.insert(filtered_tools, tool)
+        end
+      end
+      ensure_installed = filtered_tools
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       -- Setup servers using new vim.lsp API (matches latest kickstart.nvim)
