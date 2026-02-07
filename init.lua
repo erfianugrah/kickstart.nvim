@@ -866,14 +866,15 @@ require('lazy').setup({
         lua = { 'stylua' },
         javascript = { 'denols' },
         typescript = { 'denols' },
-        tsx = { 'denols' },
-        jsx = { 'denols' },
+        typescriptreact = { 'denols' },
+        javascriptreact = { 'denols' },
         svelte = { 'denols' },
         astro = { 'prettier' },
         html = { 'prettier' },
         css = { 'prettier' },
         json = { 'prettier' },
         markdown = { 'prettier' },
+        sql = { 'pg_format' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -888,7 +889,14 @@ require('lazy').setup({
         },
         denols = {
           command = 'deno',
-          args = { 'fmt', '-' },
+          args = function(_, ctx)
+            local ext = vim.fn.fnamemodify(ctx.filename, ':e')
+            return { 'fmt', '--ext', ext, '-' }
+          end,
+          stdin = true,
+        },
+        pg_format = {
+          command = 'pg_format',
           stdin = true,
         },
       },

@@ -183,6 +183,18 @@ return {
     'sindrets/diffview.nvim',
     cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewToggleFiles', 'DiffviewFocusFiles', 'DiffviewFileHistory' },
   },
+  {
+    'Piotr1215/presenterm.nvim',
+    build = false,
+    ft = { 'markdown' },
+    opts = {
+      default_keybindings = true,
+      preview = {
+        command = 'presenterm',
+        presentation_preview_sync = true,
+      },
+    },
+  },
   -- {
   --   'tris203/precognition.nvim',
   --   --event = "VeryLazy",
