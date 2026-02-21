@@ -875,6 +875,7 @@ require('lazy').setup({
         json = { 'prettier' },
         markdown = { 'prettier' },
         sql = { 'pg_format' },
+        caddyfile = { 'caddyfile_fmt' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -897,6 +898,11 @@ require('lazy').setup({
         },
         pg_format = {
           command = 'pg_format',
+          stdin = true,
+        },
+        caddyfile_fmt = {
+          command = 'caddy',
+          args = { 'fmt', '-' },
           stdin = true,
         },
       },
@@ -1088,6 +1094,7 @@ require('lazy').setup({
         'xml',
         'http',
         'graphql',
+        'caddyfile',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
