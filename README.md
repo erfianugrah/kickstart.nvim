@@ -8,6 +8,7 @@ Personal fork of [nvim-lua/kickstart.nvim](https://github.com/nvim-lua/kickstart
 - **Custom formatters**: prettier, deno fmt
 - **Extra plugins**: vim-fugitive, undotree, vim-mdx-js, quarto, atac
 - **Treesitter**: Extended language support with custom injection queries for template literals
+- **Caddyfile**: Patched tree-sitter grammar with full syntax support (see [tree-sitter/caddyfile/](#caddyfile-tree-sitter-grammar))
 - **Linting**: eslint, markdownlint, hadolint, tflint, jsonlint, yamllint
 
 Works on all platforms (Linux, macOS, Windows/WSL).
@@ -259,6 +260,33 @@ sudo dnf install -y gcc make git ripgrep fd-find unzip neovim
 sudo pacman -S --noconfirm --needed gcc make git ripgrep fd unzip neovim
 ```
 </details>
+
+### Caddyfile Tree-sitter Grammar
+
+A patched local fork of [caddyserver/tree-sitter-caddyfile](https://github.com/caddyserver/tree-sitter-caddyfile) lives in `tree-sitter/caddyfile/`. It fixes several issues with the upstream grammar:
+
+- Placeholder regex allows hyphens (e.g. `{http.request.header.CF-Connecting-IP}`)
+- `directive_name` supports `?`, `>`, `.` characters for header set-default (`?Cache-Control`), defer (`>Set-Cookie`), and domain names in `domains { }` blocks
+- `argument` regex supports `!`, `%`, `=`, `?`, `>` for negated matchers, URL-encoded values, query params, etc.
+- Bare (unbracketed) IPv6 addresses and CIDRs are highlighted in subdirective contexts like `trusted_proxies`
+- Comment toggle (`gc`) works via `commentstring` set in `lua/custom/plugins/caddyfile.lua`
+
+**Editing the grammar:**
+
+```sh
+cd ~/.config/nvim/tree-sitter/caddyfile
+# edit grammar.js
+tree-sitter generate
+tree-sitter test
+```
+
+Then in nvim:
+
+```
+:TSInstall caddyfile
+```
+
+Requires the [tree-sitter CLI](https://tree-sitter.github.io/tree-sitter/creating-parsers#installation) (`cargo install tree-sitter-cli`).
 
 ### Alternative neovim installation methods
 

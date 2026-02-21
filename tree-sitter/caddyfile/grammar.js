@@ -61,6 +61,7 @@ const subdirectiveFields = $ => [
 	repeat(
 		choice(
 			$.network_address,
+			$.bare_ipv6,
 			$.environment_variable,
 			$.placeholder,
 			$._string_literal,
@@ -138,6 +139,13 @@ module.exports = grammar({
 		_ip_cidr: _ => choice(ipv4Cidr, ipv6Cidr),
 
 		ip_address_or_cidr: _ => choice(IPV4_REGEX, IPV6_REGEX, ipv4Cidr, ipv6Cidr),
+
+		// Bare (unbracketed) IPv6 addresses and CIDRs.
+		// Used in subdirectiveFields where network_address (which requires
+		// bracketed [IPv6]) can't match bare IPv6. Only IPv6 variants are
+		// included here — IPv4 is already handled by network_address's
+		// `IPV4_REGEX + repeat(seq('/'))` path which captures IPv4 CIDRs.
+		bare_ipv6: _ => choice(ipv6Cidr, IPV6_REGEX),
 
 		network_address: _ =>
 			choice(
@@ -248,7 +256,13 @@ module.exports = grammar({
 		argument: _ =>
 			choice(
 				// Normal arguments without @ or starting with non-@ characters
-				/[a-zA-Z\-_+.\\\/*:$0-9]([a-zA-Z\-_+.\\\/*:$0-9@]*)/,
+				// Special first-char prefixes:
+				//   ? — Caddy "set default" header prefix (header ?Cache-Control ...)
+				//   > — Caddy "defer" header prefix (header >Set-Cookie ...)
+				//   ! — negated header field in matchers (header !Foo)
+				//   % — URL-encoded values (%2F, %* wildcard escape)
+				// = is only in the continuation class to avoid conflict with status_code_fallback (=404)
+				/[a-zA-Z\-_+.\\\/*:$0-9?>!%]([a-zA-Z\-_+.\\\/*:$0-9@?>!=%]*)/,
 
 				// Arguments starting with @ that contain more @ characters
 				// (like @longhorn-ui@/share/share/lib/longhorn-ui)
@@ -283,7 +297,9 @@ module.exports = grammar({
 		_environment_variable: _ => environmentVariable,
 
 		// Directives
-		directive_name: _ => /[a-zA-Z_\-+]+/,
+		// Includes ? (set default), > (defer), - (delete), + (add) header prefixes
+		// Includes . so domain names like erfi.io stay as one token in domains { } blocks
+		directive_name: _ => /[a-zA-Z_\-+?.>]+/,
 		directive: $ => seq(field('name', $.directive_name), ...directiveFields($)),
 
 		// https://caddyserver.com/docs/caddyfile/matchers#path-matchers

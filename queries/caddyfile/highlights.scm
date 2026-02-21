@@ -7,6 +7,7 @@
 [
   (network_address)
   (ip_address_or_cidr)
+  (bare_ipv6)
   (path)
 ] @type
 
@@ -43,6 +44,8 @@
   (int_literal)
   (status_code_fallback)
 ] @number
+
+(argument) @variable.parameter
 
 [
   "{"
