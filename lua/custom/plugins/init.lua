@@ -15,23 +15,6 @@ return {
     end,
   },
   {
-    'wallpants/github-preview.nvim',
-    cmd = { 'GithubPreviewToggle' },
-    keys = { '<leader>mpt' },
-    opts = {
-      -- config goes here
-    },
-    config = function(_, opts)
-      local gpreview = require 'github-preview'
-      gpreview.setup(opts)
-
-      local fns = gpreview.fns
-      vim.keymap.set('n', '<leader>mpt', fns.toggle)
-      vim.keymap.set('n', '<leader>mps', fns.single_file_toggle)
-      vim.keymap.set('n', '<leader>mpd', fns.details_tags_toggle)
-    end,
-  },
-  {
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
     build = 'cd app && yarn install',
@@ -134,10 +117,7 @@ return {
       port = '443', -- The port on which the Ollama service is listening.
       quit_map = 'q', -- set keymap for close the response window
       retry_map = '<c-r>', -- set keymap to re-send the current prompt
-      init = function(options)
-        pcall(io.popen, 'ollama serve > /dev/null 2>&1 &')
-      end,
-      -- Function to initialize Ollama
+      -- Remote Ollama instance, no local process needed
       command = function(options)
         local client_id = os.getenv 'CLOUDFLARE_ACCESS_OLLAMA_ID'
         local client_secret = os.getenv 'CLOUDFLARE_ACCESS_OLLAMA_SECRET'

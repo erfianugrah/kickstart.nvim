@@ -87,10 +87,14 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --Logging
 vim.lsp.set_log_level 'error'
 
---Spellcheck
+--Spellcheck (restricted to prose filetypes via autocmd below)
 vim.opt.spelllang = 'en_gb'
-vim.opt.spell = true
 vim.opt.mousemodel = 'popup'
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'markdown', 'text', 'gitcommit', 'quarto', 'norg', 'mdx' },
+  callback = function() vim.opt_local.spell = true end,
+})
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -100,6 +104,9 @@ vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
+
+-- Load custom filetype detection (mdx, tfvars, docker-compose, ansible, etc.)
+require 'custom.filetype'
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -192,7 +199,7 @@ vim.diagnostic.config {
   update_in_insert = false,
   severity_sort = true,
   float = { border = 'rounded', source = 'if_many' },
-  underline = { severity = vim.diagnostic.severity.ERROR },
+  underline = { severity = { min = vim.diagnostic.severity.WARN } },
 
   -- Can switch between these as you prefer
   virtual_text = true, -- Text shows up at the end of the line
@@ -274,7 +281,6 @@ require('lazy').setup({
   { 'NMAC427/guess-indent.nvim', opts = {} }, -- Detect tabstop and shiftwidth automatically
   'jxnblk/vim-mdx-js',
   'tpope/vim-fugitive',
-  'ms-jpq/coq_nvim',
   'mbbill/undotree',
 
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
@@ -292,18 +298,8 @@ require('lazy').setup({
   -- options to `gitsigns.nvim`.
   --
   -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
+  -- NOTE: gitsigns base config (signs) and keymaps are consolidated in
+  -- lua/kickstart/plugins/gitsigns.lua
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -322,6 +318,9 @@ require('lazy').setup({
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter',
+    ---@module 'which-key'
+    ---@type wk.Opts
+    ---@diagnostic disable-next-line: missing-fields
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       delay = 0,
@@ -336,6 +335,7 @@ require('lazy').setup({
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { 'gr', group = 'LSP Actions', mode = { 'n' } },
       },
     },
   },
@@ -503,14 +503,19 @@ require('lazy').setup({
       -- Automatically install LSPs and related tools to stdpath for Neovim
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
-      { 'mason-org/mason.nvim', opts = {} },
+      {
+        'mason-org/mason.nvim',
+        ---@module 'mason.settings'
+        ---@type MasonSettings
+        ---@diagnostic disable-next-line: missing-fields
+        opts = {},
+      },
+      -- Maps LSP server names between nvim-lspconfig and Mason package names.
+      'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
       { 'j-hui/fidget.nvim', opts = {} },
-
-      -- Allows extra capabilities provided by blink.cmp
-      'saghen/blink.cmp',
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -606,13 +611,7 @@ require('lazy').setup({
         end,
       })
 
-      -- LSP servers and clients are able to communicate to each other what features they support.
-      --  by default, neovim doesn't support everything that is in the lsp specification.
-      --  when you add blink.cmp, luasnip, etc. neovim now has *more* capabilities.
-      --  so, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-
-      -- enable the following language servers
+      -- Enable the following language servers
       --  feel free to add/remove any lsps that you want here. they will automatically be installed.
       --
       --  add any additional override configuration in the following tables. available keys are:
@@ -621,6 +620,7 @@ require('lazy').setup({
       --  - capabilities (table): override fields in capabilities. can be used to disable certain lsp features.
       --  - settings (table): override the default settings passed when initializing the server.
       --        for example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      ---@type table<string, vim.lsp.Config>
       local servers = {
         astro = {},
         cssls = {},
@@ -733,17 +733,10 @@ require('lazy').setup({
       --    :Mason
       --
       -- You can press `g?` for help in this menu.
-      local ensure_installed = {}
-      local seen = {}
-      local function add_tool(name)
-        if not name or name == '' or seen[name] then
-          return
-        end
-        seen[name] = true
-        table.insert(ensure_installed, name)
-      end
-
-      for _, tool in ipairs({
+      --
+      -- mason-lspconfig handles the lspconfig<->Mason name mapping automatically.
+      local ensure_installed = vim.tbl_keys(servers or {})
+      vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'markdownlint',
         'yamllint',
@@ -751,55 +744,11 @@ require('lazy').setup({
         'tflint',
         'jsonlint',
         'prettier',
-      }) do
-        add_tool(tool)
-      end
-
-      local mason_registry = require 'mason-registry'
-      local lsp_to_package = {
-        rust_analyzer = 'rust-analyzer',
-        ts_ls = 'typescript-language-server',
-        lua_ls = 'lua-language-server',
-        jsonls = 'json-lsp',
-        yamlls = 'yaml-language-server',
-        bashls = 'bash-language-server',
-        cssls = 'css-lsp',
-        html = 'html-lsp',
-        dockerls = 'dockerfile-language-server',
-        docker_compose_language_service = 'docker-compose-language-service',
-        tailwindcss = 'tailwindcss-language-server',
-        graphql = 'graphql-language-service-cli',
-        sqlls = 'sql-language-server',
-        ansiblels = 'ansible-language-server',
-        clangd = 'clangd',
-        gopls = 'gopls',
-        pyright = 'pyright',
-        terraformls = 'terraform-ls',
-        denols = 'deno',
-        marksman = 'marksman',
-      }
-
-      for server_name in pairs(servers or {}) do
-        local package_name = lsp_to_package[server_name] or server_name
-        local ok = pcall(mason_registry.get_package, package_name)
-        if ok then
-          add_tool(package_name)
-        end
-      end
-
-      local filtered_tools = {}
-      for _, tool in ipairs(ensure_installed) do
-        if pcall(mason_registry.get_package, tool) then
-          table.insert(filtered_tools, tool)
-        end
-      end
-      ensure_installed = filtered_tools
+      })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      -- Setup servers using new vim.lsp API (matches latest kickstart.nvim)
       for name, config in pairs(servers) do
-        config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
         vim.lsp.config(name, config)
         vim.lsp.enable(name)
       end
@@ -823,7 +772,10 @@ require('lazy').setup({
               checkThirdParty = false,
               -- NOTE: this is a lot slower and will cause issues when working on your own configuration.
               --  See https://github.com/neovim/nvim-lspconfig/issues/3189
-              library = vim.api.nvim_get_runtime_file('', true),
+              library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), {
+                '${3rd}/luv/library',
+                '${3rd}/busted/library',
+              }),
             },
           })
         end,
@@ -846,6 +798,8 @@ require('lazy').setup({
         desc = '[F]ormat buffer',
       },
     },
+    ---@module 'conform'
+    ---@type conform.setupOpts
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -864,11 +818,11 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        javascript = { 'denols' },
-        typescript = { 'denols' },
-        typescriptreact = { 'denols' },
-        javascriptreact = { 'denols' },
-        svelte = { 'denols' },
+        javascript = { 'denols', 'prettier', stop_after_first = true },
+        typescript = { 'denols', 'prettier', stop_after_first = true },
+        typescriptreact = { 'denols', 'prettier', stop_after_first = true },
+        javascriptreact = { 'denols', 'prettier', stop_after_first = true },
+        svelte = { 'denols', 'prettier', stop_after_first = true },
         astro = { 'prettier' },
         html = { 'prettier' },
         css = { 'prettier' },
@@ -1024,7 +978,15 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    ---@module 'todo-comments'
+    ---@type TodoOptions
+    ---@diagnostic disable-next-line: missing-fields
+    opts = { signs = false },
+  },
 
   { -- Collection of various small independent plugins/modules
     'nvim-mini/mini.nvim',
