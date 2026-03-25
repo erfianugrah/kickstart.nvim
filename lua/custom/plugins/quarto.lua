@@ -22,9 +22,11 @@ return {
     },
   },
 
-  { -- directly open ipynb files as quarto docuements
+  { -- directly open ipynb files as quarto documents
     -- and convert back behind the scenes
+    -- NOTE: disabled until jupytext CLI is installed and plugin updates for nvim 0.11
     'GCBallesteros/jupytext.nvim',
+    enabled = false,
     opts = {
       custom_language_formatting = {
         python = {
@@ -124,7 +126,7 @@ return {
   { -- preview equations
     'jbyuki/nabla.nvim',
     keys = {
-      { '<leader>qm', ':lua require"nabla".toggle_virt()<cr>', desc = 'toggle [m]ath equations' },
+      { '<leader>tm', ':lua require"nabla".toggle_virt()<cr>', desc = '[T]oggle [m]ath equations' },
     },
   },
 }

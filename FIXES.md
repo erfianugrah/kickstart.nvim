@@ -371,3 +371,81 @@ typescript = { 'denols', 'prettier', stop_after_first = true },
 Or keep as-is if you prefer deno fmt universally.
 
 - [x] Done
+
+---
+
+## Healthcheck Fixes (post-merge)
+
+### 19. Switch blink.cmp fuzzy to rust implementation
+
+**File:** `init.lua` (blink.cmp config)
+
+Changed `fuzzy = { implementation = 'lua' }` to
+`fuzzy = { implementation = 'prefer_rust_with_warning' }`. The rust fuzzy
+matcher is recommended and eliminates the "lib not downloaded" warning. Falls
+back to Lua if the binary can't be fetched.
+
+- [x] Done
+
+---
+
+### 20. img-clip: install `wl-clipboard` for WSL2
+
+**System fix** -- not a config change.
+
+Run: `sudo pacman -S wl-clipboard`
+
+- [ ] Requires manual sudo
+
+---
+
+### 21. Disable jupytext.nvim (upstream nvim 0.11 incompatibility)
+
+**File:** `lua/custom/plugins/quarto.lua`
+
+jupytext.nvim uses deprecated `vim.health.report_start` and old-style
+`vim.validate` (Neovim 0.11 removed these). The plugin is on its latest
+version. The `jupytext` CLI is also not installed, so the plugin is
+non-functional anyway. Disabled with `enabled = false` until upstream fixes.
+
+- [x] Done
+
+---
+
+### 22. Disable unused remote providers
+
+**File:** `init.lua` (top of file)
+
+Added provider disables to suppress healthcheck warnings for languages not
+used as Neovim remote plugin hosts:
+
+```lua
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+```
+
+- [x] Done
+
+---
+
+### 23. Clear bloated LSP log (236MB)
+
+**System fix:** `truncate -s 0 ~/.local/state/nvim/lsp.log`
+
+Log level is already set to `'error'` which prevents rapid regrowth.
+
+- [x] Done
+
+---
+
+### 24. Fix `<Space>q` / `<Space>qm` keymap overlap
+
+**File:** `lua/custom/plugins/quarto.lua`
+
+nabla.nvim math toggle was mapped to `<leader>qm`, overlapping with the
+`<leader>q` diagnostic quickfix list keymap. Moved to `<leader>tm` (Toggle
+math) which fits the `[T]oggle` group convention.
+
+- [x] Done
