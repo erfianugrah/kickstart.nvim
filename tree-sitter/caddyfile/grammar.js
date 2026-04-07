@@ -267,6 +267,11 @@ module.exports = grammar({
 				// Arguments starting with @ that contain more @ characters
 				// (like @longhorn-ui@/share/share/lib/longhorn-ui)
 				/@[a-zA-Z\-_+.\\\/*:$0-9]*@[a-zA-Z\-_+.\\\/*:$0-9@]*/,
+
+				// Standalone @ — root domain marker in dynamic_dns domains blocks.
+				// Safe now that matcher_identifier is a single token (@name);
+				// the lexer won't confuse bare '@' with '@name'.
+				'@',
 			),
 
 		// Fallback status code, primarily used with `try_files` as the last argument.
@@ -299,16 +304,19 @@ module.exports = grammar({
 		// Directives
 		// Includes ? (set default), > (defer), - (delete), + (add) header prefixes
 		// Includes . so domain names like erfi.io stay as one token in domains { } blocks
-		directive_name: _ => /[a-zA-Z_\-+?.>]+/,
+		// Digits allowed after the first char for names like layer4, h2c, etc.
+		directive_name: _ => /[a-zA-Z_\-+?.>][a-zA-Z0-9_\-+?.>]*/,
 		directive: $ => seq(field('name', $.directive_name), ...directiveFields($)),
 
 		// https://caddyserver.com/docs/caddyfile/matchers#path-matchers
 		path: _ => token(prec(2, seq(choice('/', '\\'), /([a-zA-Z0-9\-_%\\\/.]+)*(\*)?/))),
 
 		// https://caddyserver.com/docs/caddyfile/matchers#named-matchers
+		// matcher_identifier is a single token (@name) so the lexer can
+		// distinguish it from a standalone '@' (root-domain marker in
+		// dynamic_dns domains blocks).
 		matcher_name: _ => /[a-zA-Z0-9\-_]+/,
-		matcher_identifier: $ => seq('@', field('name', $.matcher_name)),
-		// matcher_identifier: _ => token(prec(1, seq('@', field('name', /[a-zA-Z0-9\-_]+/)))),
+		matcher_identifier: _ => token(seq('@', /[a-zA-Z0-9\-_]+/)),
 
 		// https://caddyserver.com/docs/caddyfile/matchers#expression
 		_bare_cel_expression: $ => repeat1($._bare_cel_expression_content),
@@ -333,8 +341,9 @@ module.exports = grammar({
 							field('expression', alias($._bare_cel_expression, $.cel_expression)),
 						),
 					),
-					seq(
-						field('name', $.matcher_directive_name),
+				seq(
+					field('name', $.matcher_directive_name),
+					optional(
 						choice(
 							$.matcher_block,
 							repeat1(
@@ -353,6 +362,7 @@ module.exports = grammar({
 							),
 						),
 					),
+				),
 				),
 				token.immediate(NEW_LINE_REGEX),
 			),
@@ -375,7 +385,25 @@ module.exports = grammar({
 		// Sites
 		//
 
-		_definition: $ => choice($.directive, $.named_matcher),
+		_definition: $ => choice($.directive, $.named_matcher, $.address_block),
+
+		// Address-headed block — used by caddy-l4 (layer4) and similar plugins
+		// that nest listener addresses inside a directive block.
+		// Only bare-port (`:2222`) and IP/hostname+port forms are supported;
+		// using the full site_address rule would create ambiguity with
+		// directive_name and break single_site / site_block parsing.
+		listener_address: _ =>
+			choice(
+				// :port
+				token(seq(':', PORT_REGEX)),
+				// IPv4:port  |  IPv4
+				token(seq(IPV4_REGEX, optional(seq(':', PORT_REGEX)))),
+				// [IPv6]:port  |  [IPv6]
+				token(seq(IPV6_ADDRESS, optional(seq(':', PORT_REGEX)))),
+				// hostname:port  (requires port to avoid directive_name ambiguity)
+				token(seq(bareHostname, ':', PORT_REGEX)),
+			),
+		address_block: $ => seq(field('name', $.listener_address), $.block),
 
 		// Block is a site block that is allowed to define directives and named matchers.
 		block: $ => seq('{', token.immediate(NEW_LINE_REGEX), field('body', repeat($._definition)), '}'),

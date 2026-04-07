@@ -15,15 +15,16 @@
   (snippet_name)
   (named_route_identifier)
   (site_address)
+  (listener_address)
 ] @keyword
 
 (directive (directive_name) @property)
 
 ; declaration of a named matcher
-(named_matcher (matcher_identifier (matcher_name)) @function.macro)
+(named_matcher (matcher_identifier) @function.macro)
 
 ; reference to a named matcher
-(matcher (matcher_identifier (matcher_name)) @function.macro)
+(matcher (matcher_identifier) @function.macro)
 
 ; directive within a named matcher declaration
 (matcher_directive (matcher_directive_name) @function.method)

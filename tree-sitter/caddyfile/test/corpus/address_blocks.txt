@@ -1,0 +1,96 @@
+===================================
+Layer4 with port address block
+===================================
+
+{
+	layer4 {
+		:2222 {
+			@ssh ssh
+			route @ssh {
+				proxy 172.19.50.2:2222
+			}
+		}
+	}
+}
+
+---
+
+(source_file
+	(global_options
+		(directive
+			(directive_name)
+			(block
+				(address_block
+					(listener_address)
+					(block
+						(named_matcher
+							(matcher_identifier)
+							(matcher_directive
+								(matcher_directive_name)))
+						(directive
+							(directive_name)
+							(matcher
+								(matcher_identifier))
+							(block
+								(directive
+									(directive_name)
+									(network_address))))))))))
+
+=====================================================
+Layer4 with multiple port address blocks
+=====================================================
+
+{
+	layer4 {
+		:443 {
+			@tls tls
+			route @tls {
+				proxy localhost:8443
+			}
+		}
+		:2222 {
+			@ssh ssh
+			route @ssh {
+				proxy localhost:22
+			}
+		}
+	}
+}
+
+---
+
+(source_file
+	(global_options
+		(directive
+			(directive_name)
+			(block
+				(address_block
+					(listener_address)
+					(block
+						(named_matcher
+							(matcher_identifier)
+							(matcher_directive
+								(matcher_directive_name)))
+						(directive
+							(directive_name)
+							(matcher
+								(matcher_identifier))
+							(block
+								(directive
+									(directive_name)
+									(network_address))))))
+				(address_block
+					(listener_address)
+					(block
+						(named_matcher
+							(matcher_identifier)
+							(matcher_directive
+								(matcher_directive_name)))
+						(directive
+							(directive_name)
+							(matcher
+								(matcher_identifier))
+							(block
+								(directive
+									(directive_name)
+									(network_address))))))))))

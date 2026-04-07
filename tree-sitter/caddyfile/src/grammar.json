@@ -1514,6 +1514,10 @@
         {
           "type": "PATTERN",
           "value": "@[a-zA-Z\\-_+.\\\\\\/*:$0-9]*@[a-zA-Z\\-_+.\\\\\\/*:$0-9@]*"
+        },
+        {
+          "type": "STRING",
+          "value": "@"
         }
       ]
     },
@@ -1662,7 +1666,7 @@
     },
     "directive_name": {
       "type": "PATTERN",
-      "value": "[a-zA-Z_\\-+?.>]+"
+      "value": "[a-zA-Z_\\-+?.>][a-zA-Z0-9_\\-+?.>]*"
     },
     "directive": {
       "type": "SEQ",
@@ -1787,21 +1791,20 @@
       "value": "[a-zA-Z0-9\\-_]+"
     },
     "matcher_identifier": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "@"
-        },
-        {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "matcher_name"
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "@"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[a-zA-Z0-9\\-_]+"
           }
-        }
-      ]
+        ]
+      }
     },
     "_bare_cel_expression": {
       "type": "REPEAT1",
@@ -2008,56 +2011,64 @@
                   "type": "CHOICE",
                   "members": [
                     {
-                      "type": "SYMBOL",
-                      "name": "matcher_block"
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "matcher_block"
+                        },
+                        {
+                          "type": "REPEAT1",
+                          "content": {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "network_address"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "environment_variable"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "placeholder"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "path"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "_string_literal"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "duration_literal"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "int_literal"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "argument"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "heredoc"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "ip_address_or_cidr"
+                              }
+                            ]
+                          }
+                        }
+                      ]
                     },
                     {
-                      "type": "REPEAT1",
-                      "content": {
-                        "type": "CHOICE",
-                        "members": [
-                          {
-                            "type": "SYMBOL",
-                            "name": "network_address"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "environment_variable"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "placeholder"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "path"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "_string_literal"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "duration_literal"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "int_literal"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "argument"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "heredoc"
-                          },
-                          {
-                            "type": "SYMBOL",
-                            "name": "ip_address_or_cidr"
-                          }
-                        ]
-                      }
+                      "type": "BLANK"
                     }
                   ]
                 }
@@ -2128,6 +2139,219 @@
         {
           "type": "SYMBOL",
           "name": "named_matcher"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "address_block"
+        }
+      ]
+    },
+    "listener_address": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": ":"
+              },
+              {
+                "type": "PATTERN",
+                "value": "[0-9]{1,5}"
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ":"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "[0-9]{1,5}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "["
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "%"
+                          },
+                          {
+                            "type": "PATTERN",
+                            "value": "[a-z0-9]+"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "]"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": ":"
+                      },
+                      {
+                        "type": "PATTERN",
+                        "value": "[0-9]{1,5}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[a-z][a-z0-9\\-]*[a-z0-9]+"
+                  },
+                  {
+                    "type": "REPEAT",
+                    "content": {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "."
+                        },
+                        {
+                          "type": "PATTERN",
+                          "value": "[a-z][a-z0-9\\-]*[a-z0-9]+"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "."
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[a-z][a-z]+"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "xn--[a-z0-9]+"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "STRING",
+                "value": ":"
+              },
+              {
+                "type": "PATTERN",
+                "value": "[0-9]{1,5}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "address_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "listener_address"
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "block"
         }
       ]
     },

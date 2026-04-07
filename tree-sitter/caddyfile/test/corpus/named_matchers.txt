@@ -14,16 +14,14 @@ reverse_proxy @test 127.0.0.1
 	(single_site
 		name: (site_address)
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_directive
 				name: (matcher_directive_name)
 				(network_address)))
 		body: (directive
 			name: (directive_name)
 			(matcher
-				(matcher_identifier
-					name: (matcher_name)))
+				(matcher_identifier))
 			(network_address))))
 
 ===================
@@ -44,8 +42,7 @@ reverse_proxy @test 127.0.0.1
 	(single_site
 		name: (site_address)
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_block
 				body: (matcher_directive
 					name: (matcher_directive_name)
@@ -53,8 +50,7 @@ reverse_proxy @test 127.0.0.1
 		body: (directive
 			name: (directive_name)
 			(matcher
-				(matcher_identifier
-					name: (matcher_name)))
+				(matcher_identifier))
 			(network_address))))
 
 ===========
@@ -73,16 +69,14 @@ reverse_proxy @test 127.0.0.1
 	(single_site
 		name: (site_address)
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_directive
 				name: (matcher_directive_name)
 				(network_address)))
 		body: (directive
 			name: (directive_name)
 			(matcher
-				(matcher_identifier
-					name: (matcher_name)))
+				(matcher_identifier))
 			(network_address))))
 
 ===========
@@ -103,25 +97,21 @@ reverse_proxy @test 127.0.0.1
 	(single_site
 		name: (site_address)
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_directive
 				expression: (cel_expression)))
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_directive
 				expression: (cel_expression)))
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_directive
 				expression: (cel_expression)))
 		body: (directive
 			name: (directive_name)
 			(matcher
-				(matcher_identifier
-					name: (matcher_name)))
+				(matcher_identifier))
 			(network_address))))
 
 =========================================
@@ -140,8 +130,7 @@ reverse_proxy @private 127.0.0.1
 	(single_site
 		name: (site_address)
 		body: (named_matcher
-			(matcher_identifier
-				name: (matcher_name))
+			(matcher_identifier)
 			(matcher_directive
 				name: (matcher_directive_name)
 				(ip_address_or_cidr)
@@ -153,6 +142,5 @@ reverse_proxy @private 127.0.0.1
 		body: (directive
 			name: (directive_name)
 			(matcher
-				(matcher_identifier
-					name: (matcher_name)))
+				(matcher_identifier))
 			(network_address))))

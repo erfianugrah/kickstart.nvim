@@ -265,6 +265,11 @@ sudo pacman -S --noconfirm --needed gcc make git ripgrep fd unzip neovim
 
 A patched local fork of [caddyserver/tree-sitter-caddyfile](https://github.com/caddyserver/tree-sitter-caddyfile) lives in `tree-sitter/caddyfile/`. It fixes several issues with the upstream grammar:
 
+- **layer4 / caddy-l4 support** — `address_block` + `listener_address` rules allow `:port`, `ip:port`, and `host:port` blocks inside directives (e.g. `layer4 { :2222 { ... } }`)
+- **Digits in directive names** — `directive_name` allows digits after the first character so names like `layer4`, `h2c` parse as single tokens
+- **Zero-argument matcher directives** — protocol matchers like `@ssh ssh` and `@tls tls` no longer require arguments after the directive name
+- **Standalone `@` argument** — bare `@` is valid as an argument (root-domain marker in `dynamic_dns domains` blocks)
+- **Single-token `matcher_identifier`** — `@name` is now a single lexer token, resolving conflicts between named matchers and the standalone `@` argument
 - Placeholder regex allows hyphens (e.g. `{http.request.header.CF-Connecting-IP}`)
 - `directive_name` supports `?`, `>`, `.` characters for header set-default (`?Cache-Control`), defer (`>Set-Cookie`), and domain names in `domains { }` blocks
 - `argument` regex supports `!`, `%`, `=`, `?`, `>` for negated matchers, URL-encoded values, query params, etc.
@@ -278,12 +283,10 @@ cd ~/.config/nvim/tree-sitter/caddyfile
 # edit grammar.js
 tree-sitter generate
 tree-sitter test
-```
-
-Then in nvim:
-
-```
-:TSInstall caddyfile
+# compile and install the .so
+cc -shared -fPIC -o /tmp/caddyfile.so -I src src/parser.c src/scanner.c -Os
+cp /tmp/caddyfile.so ~/.local/share/nvim/site/parser/caddyfile.so
+cp /tmp/caddyfile.so ~/.local/share/nvim/lazy/nvim-treesitter/parser/caddyfile.so
 ```
 
 Requires the [tree-sitter CLI](https://tree-sitter.github.io/tree-sitter/creating-parsers#installation) (`cargo install tree-sitter-cli`).

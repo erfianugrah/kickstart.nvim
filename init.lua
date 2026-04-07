@@ -91,7 +91,7 @@ vim.g.loaded_python3_provider = 0
 vim.g.loaded_ruby_provider = 0
 
 --Logging
-vim.lsp.set_log_level 'error'
+vim.lsp.log.set_level 'ERROR'
 
 --Spellcheck (restricted to prose filetypes via autocmd below)
 vim.opt.spelllang = 'en_gb'
@@ -741,8 +741,12 @@ require('lazy').setup({
       --
       -- You can press `g?` for help in this menu.
       --
-      -- mason-lspconfig handles the lspconfig<->Mason name mapping automatically.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      -- Map lspconfig server names to Mason package names so mason-tool-installer can find them.
+      local lspconfig_to_package = require('mason-lspconfig').get_mappings().lspconfig_to_package
+      local ensure_installed = vim.tbl_map(
+        function(name) return lspconfig_to_package[name] or name end,
+        vim.tbl_keys(servers or {})
+      )
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'markdownlint',
@@ -818,7 +822,7 @@ require('lazy').setup({
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 2500,
             lsp_format = 'fallback',
           }
         end
@@ -1033,70 +1037,37 @@ require('lazy').setup({
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.config', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = {
-        'bash',
-        'c',
-        'html',
-        'lua',
-        'diff',
-        'luadoc',
-        'markdown',
-        'markdown_inline',
-        'query',
-        'vim',
-        'vimdoc',
-        'astro',
-        'css',
-        'csv',
-        'javascript',
-        'json',
-        'jsonc',
-        'terraform',
-        'sql',
-        'typescript',
-        'yaml',
-        'mermaid',
-        'xml',
-        'http',
-        'graphql',
-        'caddyfile',
-      },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-      incremental_selection = {
-        enable = true,
-      },
-      -- Make sure this is enabled
-      injections = {
-        enable = true,
-      },
-    },
-    config = function(_, opts)
+    config = function()
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+      -- The main branch is a rewrite for Neovim 0.12+; highlighting, indent,
+      -- and folds are now provided by Neovim core, while nvim-treesitter
+      -- handles parser/query installation.
 
-      -- Prefer git instead of curl in order to improve connectivity in some environments
-      require('nvim-treesitter.install').prefer_git = true
-      ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup(opts)
+      -- Install parsers (no-op if already installed)
+      -- NOTE: caddyfile is a custom local parser; install it manually with :TSInstall caddyfile
+      -- after registering it (see lua/custom/plugins/caddyfile.lua).
+      require('nvim-treesitter').install {
+        'bash', 'c', 'html', 'lua', 'diff', 'luadoc',
+        'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+        'astro', 'css', 'csv', 'javascript', 'json',
+        'terraform', 'sql', 'typescript', 'yaml',
+        'mermaid', 'xml', 'http', 'graphql',
+      }
 
-      -- There are additional nvim-treesitter modules that you can use to interact
-      -- with nvim-treesitter. You should go explore a few and see what interests you:
-      --
-      --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-      --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-      --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+      -- Enable treesitter highlighting for all filetypes with a parser.
+      -- Neovim 0.12 only auto-enables it for lua, markdown, query, and help;
+      -- this covers every other language we install above.
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('treesitter-start', { clear = true }),
+        callback = function(ev)
+          pcall(vim.treesitter.start, ev.buf)
+        end,
+      })
+
+      -- Custom injection queries for JavaScript template literals
       vim.treesitter.query.set(
         'javascript',
         'injections',
@@ -1187,7 +1158,7 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'json', 'jsonc' },
   callback = function()
     vim.opt_local.foldmethod = 'expr'
-    vim.opt_local.foldexpr = 'nvim_treesitter#foldexpr()'
+    vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
     -- Start with folds open
     vim.opt_local.foldenable = false
   end,

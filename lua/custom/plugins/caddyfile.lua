@@ -25,16 +25,23 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Register the tree-sitter parser for caddyfile (patched local copy)
 -- Source grammar lives in ~/.config/nvim/tree-sitter/caddyfile/
 -- After editing grammar.js, run: cd ~/.config/nvim/tree-sitter/caddyfile && tree-sitter generate && tree-sitter test
--- Then in nvim: :TSInstall caddyfile
-local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
-parser_config.caddyfile = {
-  install_info = {
-    url = vim.fn.stdpath 'config' .. '/tree-sitter/caddyfile',
-    files = { 'src/parser.c', 'src/scanner.c' },
-    generate_requires_npm = false,
-    requires_generate_from_grammar = false,
-  },
-  filetype = 'caddyfile',
-}
+-- Then copy the compiled .so: cp parser/caddyfile.so ~/.local/share/nvim/site/parser/caddyfile.so
+--
+-- Register parser definition so :TSInstall caddyfile works.
+-- Uses User TSUpdate autocmd to survive nvim-treesitter's reload_parsers() cache wipe.
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'TSUpdate',
+  callback = function()
+    local ok, parsers = pcall(require, 'nvim-treesitter.parsers')
+    if ok then
+      parsers.caddyfile = parsers.caddyfile or {
+        install_info = {
+          url = vim.fn.stdpath 'config' .. '/tree-sitter/caddyfile',
+        },
+        tier = 4,
+      }
+    end
+  end,
+})
 
 return {}
