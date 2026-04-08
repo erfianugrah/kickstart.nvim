@@ -4,8 +4,8 @@ Personal fork of [nvim-lua/kickstart.nvim](https://github.com/nvim-lua/kickstart
 
 ## What's Different From Upstream
 
-- **Additional LSP servers**: astro, tailwindcss, denols, graphql, yamlls, dockerls, terraform, and more
-- **Custom formatters**: prettier, deno fmt
+- **Additional LSP servers**: astro, tailwindcss, denols, graphql, yamlls, dockerls, terraform, sqls, and more
+- **Custom formatters**: prettier, deno fmt, sqruff (SQL)
 - **Extra plugins**: vim-fugitive, undotree, vim-mdx-js, quarto, atac
 - **Treesitter**: Extended language support with custom injection queries for template literals
 - **Caddyfile**: Patched tree-sitter grammar with full syntax support (see [tree-sitter/caddyfile/](#caddyfile-tree-sitter-grammar))

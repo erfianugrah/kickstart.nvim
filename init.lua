@@ -715,7 +715,7 @@ require('lazy').setup({
         docker_compose_language_service = {},
         dockerls = {},
         mdx_analyzer = {},
-
+        sqls = {},
         ansiblels = {},
         jqls = {},
         rust_analyzer = {},
