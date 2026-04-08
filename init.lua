@@ -863,6 +863,14 @@ require('lazy').setup({
           stdin = true,
         },
 
+        sqruff = {
+          args = function(_, ctx)
+            -- Use project-local .sqlfluff if found, else fall back to nvim config
+            local config = vim.fs.find('.sqlfluff', { path = ctx.dirname, upward = true })[1]
+              or (vim.fn.stdpath 'config' .. '/.sqlfluff')
+            return { 'fix', '--config', config, '$FILENAME' }
+          end,
+        },
         caddyfile_fmt = {
           command = 'caddy',
           args = { 'fmt', '-' },
