@@ -755,6 +755,7 @@ require('lazy').setup({
         'tflint',
         'jsonlint',
         'prettier',
+        'sqruff',
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -839,7 +840,7 @@ require('lazy').setup({
         css = { 'prettier' },
         json = { 'prettier' },
         markdown = { 'prettier' },
-        sql = { 'pg_format' },
+        sql = { 'sqruff' },
         caddyfile = { 'caddyfile_fmt' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
@@ -861,10 +862,7 @@ require('lazy').setup({
           end,
           stdin = true,
         },
-        pg_format = {
-          command = 'pg_format',
-          stdin = true,
-        },
+
         caddyfile_fmt = {
           command = 'caddy',
           args = { 'fmt', '-' },
