@@ -716,6 +716,12 @@ require('lazy').setup({
         dockerls = {},
         mdx_analyzer = {},
         sqls = {},
+        sqlls = {
+          handlers = {
+            -- Suppress diagnostics — sqlls parser chokes on Postgres functions like gen_random_uuid()
+            ['textDocument/publishDiagnostics'] = function() end,
+          },
+        },
         ansiblels = {},
         jqls = {},
         rust_analyzer = {},
