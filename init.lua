@@ -695,7 +695,6 @@ require('lazy').setup({
         'tflint',
         'jsonlint',
         'prettier',
-        'sqruff',
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -706,91 +705,7 @@ require('lazy').setup({
       end
     end,
   },
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    keys = {
-      {
-        '<leader>f',
-        function() require('conform').format { async = true, lsp_format = 'fallback' } end,
-        mode = '',
-        desc = '[F]ormat buffer',
-      },
-    },
-    ---@module 'conform'
-    ---@type conform.setupOpts
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 2500,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        javascript = { 'denols', 'prettier', stop_after_first = true },
-        typescript = { 'denols', 'prettier', stop_after_first = true },
-        typescriptreact = { 'denols', 'prettier', stop_after_first = true },
-        javascriptreact = { 'denols', 'prettier', stop_after_first = true },
-        svelte = { 'denols', 'prettier', stop_after_first = true },
-        astro = { 'prettier' },
-        html = { 'prettier' },
-        css = { 'prettier' },
-        json = { 'prettier' },
-        markdown = { 'prettier' },
-        sql = { 'sqruff' },
-        caddyfile = { 'caddyfile_fmt' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-      formatters = {
-        prettier = {
-          command = 'prettier',
-          args = { '--stdin-filepath', '$FILENAME' },
-          stdin = true,
-        },
-        denols = {
-          command = 'deno',
-          args = function(_, ctx)
-            local ext = vim.fn.fnamemodify(ctx.filename, ':e')
-            return { 'fmt', '--ext', ext, '-' }
-          end,
-          stdin = true,
-          -- Only available in Deno projects (has deno.json / deno.jsonc)
-          condition = function(_, ctx)
-            return #vim.fs.find({ 'deno.json', 'deno.jsonc' }, { path = ctx.dirname, upward = true }) > 0
-          end,
-        },
 
-        sqruff = {
-          args = function(_, ctx)
-            -- Use project-local .sqlfluff if found, else fall back to nvim config
-            local config = vim.fs.find('.sqlfluff', { path = ctx.dirname, upward = true })[1]
-              or (vim.fn.stdpath 'config' .. '/.sqlfluff')
-            return { 'fix', '--config', config, '$FILENAME' }
-          end,
-        },
-        caddyfile_fmt = {
-          command = 'caddy',
-          args = { 'fmt', '-' },
-          stdin = true,
-        },
-      },
-    },
-  },
   { -- Autocompletion
     'saghen/blink.cmp',
     event = 'VimEnter',
@@ -981,7 +896,5 @@ require('lazy').setup({
     },
   },
 })
-
--- vim: ts=2 sts=2 sw=2 et
 
 -- vim: ts=2 sts=2 sw=2 et

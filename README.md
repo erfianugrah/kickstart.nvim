@@ -19,7 +19,7 @@ nvim  # Lazy will install all plugins on first launch
 
 ## What's Different From Upstream
 
-Single-file `init.lua` (~990 lines) with these additions on top of kickstart:
+Single-file `init.lua` (~900 lines) with these additions on top of kickstart:
 
 ### Neovim 0.12 Native Features
 
@@ -67,14 +67,24 @@ All servers use `root_markers` (Neovim 0.12 native) instead of lspconfig's `root
 | Formatter | Filetypes | Notes |
 |-----------|-----------|-------|
 | `prettier` | JS, TS, JSX, TSX, Svelte, Astro, HTML, CSS, JSON, Markdown | |
-| `deno fmt` | JS, TS, JSX, TSX | Only runs in Deno projects (gated by `deno.json` presence) |
+| `denols` (deno fmt) | JS, TS, JSX, TSX, Svelte | Only in Deno projects (gated by `deno.json` presence) |
 | `stylua` | Lua | |
-| `sqruff` | SQL | Uses project-local `.sqlfluff` if found |
+| `pg_format` | SQL | System-installed (`/usr/sbin/pg_format`), with Lua post-processor for function arg wrapping and DDL fixes |
 | `caddy fmt` | Caddyfile | |
+
+#### SQL Formatting Pipeline
+
+SQL uses a two-stage pipeline via conform.nvim:
+
+1. **`pg_format`** — PostgreSQL-native formatter (`--spaces 2 --no-space-function`)
+2. **`pg_format_fix`** — Lua post-processor (`lua/pg_format_wrapper.lua`) that fixes:
+   - Function arg wrapping (e.g. `cron.schedule()` args each on own line)
+   - `TEXT DEFAULT` split across lines
+   - DDL paren spacing stripped by `--no-space-function` (restores space in `CREATE TABLE name (`, `INSERT INTO name (`)
 
 ### Linters (via nvim-lint)
 
-`jsonlint`, `hadolint` (Dockerfile), `tflint` (Terraform), `eslint` (JS) -- only runs linters that are installed.
+`jsonlint`, `hadolint` (Dockerfile), `tflint` (Terraform), `eslint` (JS) — only runs linters that are installed.
 
 ### Plugins
 
@@ -84,14 +94,14 @@ All servers use `root_markers` (Neovim 0.12 native) instead of lspconfig's `root
 | **snacks.nvim** | Swiss-army knife | `<leader>gg` lazygit, `<leader>.` scratch buffer, `<leader>S` select scratch, `<leader>n` notification history, `]]`/`[[` next/prev LSP reference |
 | **harpoon** | File bookmarks | `<leader>a` add, `<leader>e` menu, `<leader>1-4` quick select |
 | **telescope.nvim** | Fuzzy finder | `<leader>sf` files, `<leader>sg` grep, `<leader>sh` help, `<leader>sd` diagnostics, `<leader>/` buffer search, `<leader><leader>` buffers |
-| **blink.cmp** | Completion | `<c-y>` accept, `<c-n>`/`<c-p>` navigate, `<c-space>` show docs, `<c-k>` signature help |
+| **blink.cmp** | Completion | Default preset: `<c-y>` accept, `<c-n>`/`<c-p>` navigate, `<c-space>` toggle menu |
 | **neo-tree** | File explorer | `\` toggle |
 | **trouble.nvim** | Diagnostics panel | `<leader>xx` all diagnostics, `<leader>xX` buffer diagnostics, `<leader>cs` symbols |
 | **gitsigns.nvim** | Git signs + hunks | `]c`/`[c` navigate hunks, `<leader>hs` stage, `<leader>hr` reset, `<leader>hp` preview |
 | **vim-fugitive** | Git commands | `:Git`, `:Gvdiffsplit`, etc. |
 | **diffview.nvim** | Git diff viewer | `:DiffviewOpen`, `:DiffviewFileHistory` |
 | **which-key.nvim** | Keymap hints | Appears after pressing `<leader>` (0ms delay) |
-| **todo-comments** | TODO/FIXME highlights | `<leader>st` search TODOs |
+| **todo-comments** | TODO/FIXME highlights | `:TodoTelescope` to search |
 | **mini.nvim** | Textobjects, surround, statusline | `va)`, `saiw)`, `sd'`, etc. |
 | **nvim-dap** | Debug Adapter Protocol | `<F5>` continue, `<F1>` step into, `<F2>` step over, `<leader>b` breakpoint |
 | **conform.nvim** | Formatting | `<leader>f` format, auto-format on save |
@@ -104,6 +114,17 @@ All servers use `root_markers` (Neovim 0.12 native) instead of lspconfig's `root
 | **twilight + zen-mode** | Focus mode | `:ZenMode`, `:Twilight` |
 | **opencode.nvim** | OpenCode AI assistant | `<leader>o` prefix |
 | **quarto-nvim** | Quarto notebooks | Otter LSP, vim-slime REPL |
+| **guess-indent.nvim** | Auto-detect indent | Auto |
+| **vim-mdx-js** | MDX syntax | Auto |
+| **tokyonight.nvim** | Colorscheme | `tokyonight-night` |
+| **fidget.nvim** | LSP progress indicator | Visual only |
+| **nvim-lspconfig** | Mason ↔ LSP name mapping | (no direct usage; Mason integration) |
+| **highlight-colors** | Color previews | Tailwind + named colors |
+| **markdown-preview** | Browser markdown preview | `:MarkdownPreview` |
+| **vim-pencil** | Soft/hard prose wrapping | `:Pencil`, `:PencilToggle` |
+| **presenterm.nvim** | Terminal presentations | Markdown-based slides |
+| **atac.nvim** | HTTP client | `:Atac` |
+| **window-picker** | Pick window for splits | Used by neo-tree |
 
 ### Treesitter Parsers
 
@@ -126,9 +147,9 @@ Defined in `lua/custom/filetype.lua`:
 
 - `.mdx` files
 - `.tfvars` / `.tfvars.json` (terraform-vars)
-- `.gotmpl` / `go.work` files
-- `docker-compose.yml` / `compose.yml` variants
-- `.gitlab-ci.yml`
+- `.gotmpl` / `go.work` / `go.work.sum` files
+- `docker-compose.yml` / `compose.yml` variants (`.yml` and `.yaml`)
+- `.gitlab-ci.yml` / `.gitlab-ci.yaml`
 - Ansible playbooks/roles (pattern-based)
 - Helm values files
 
@@ -141,7 +162,7 @@ Defined in `lua/custom/filetype.lua`:
 | `<Space>` | n | Leader key |
 | `<Esc>` | n | Clear search highlight |
 | `<leader>T` | n | Toggle undo tree (native) |
-| `<leader>q` | n | Open diagnostic quickfix |
+| `<leader>q` | n | Open diagnostic loclist |
 | `<leader>f` | n | Format buffer |
 | `<C-h/j/k/l>` | n | Navigate splits (tmux-aware) |
 
@@ -179,6 +200,7 @@ Defined in `lua/custom/filetype.lua`:
 | Key | Mode | Action |
 |-----|------|--------|
 | `<leader>sf` | n | Find files |
+| `<leader>ss` | n | Search select (Telescope pickers) |
 | `<leader>sg` | n | Live grep |
 | `<leader>sw` | n,v | Grep current word |
 | `<leader>sh` | n | Help tags |
@@ -208,38 +230,86 @@ Defined in `lua/custom/filetype.lua`:
 
 ```
 ~/.config/nvim/
-  init.lua                  -- Main config (single file)
-  lua/
-    custom/
-      filetype.lua          -- Custom filetype detection
-      plugins/
-        init.lua            -- Extra plugins (tmux-nav, trouble, zen-mode, etc.)
-        caddyfile.lua       -- Caddyfile treesitter + filetype
-        opencode.lua        -- OpenCode AI plugin
-        quarto.lua          -- Quarto notebook ecosystem
-        atac.lua            -- ATAC HTTP client
-    kickstart/
-      health.lua            -- :checkhealth module
-      plugins/
-        debug.lua           -- DAP (Go debugging)
-        lint.lua            -- nvim-lint config
-        gitsigns.lua        -- Git signs + keymaps
-        neo-tree.lua        -- File explorer
-        autopairs.lua       -- Auto-close brackets
-        indent_line.lua     -- Indent guides
-  queries/caddyfile/        -- Custom Caddyfile highlight queries
-  tree-sitter/caddyfile/    -- Patched Caddyfile grammar (see below)
+├── init.lua                        Main config (~900 lines)
+├── AGENTS.md                       AI agent guidelines
+├── .stylua.toml                    StyLua formatter config
+├── .gitignore
+├── .github/workflows/stylua.yml    CI: StyLua formatting check
+├── lazy-lock.json                  Plugin version lockfile (gitignored)
+├── lua/
+│   ├── pg_format_wrapper.lua       SQL post-processor for pg_format output
+│   ├── custom/
+│   │   ├── filetype.lua            Custom filetype detection
+│   │   └── plugins/
+│   │       ├── init.lua            Extra plugins (tmux-nav, trouble, zen-mode, etc.)
+│   │       ├── conform.lua         Formatter config (conform.nvim)
+│   │       ├── caddyfile.lua       Caddyfile treesitter + filetype
+│   │       ├── opencode.lua        OpenCode AI plugin
+│   │       ├── quarto.lua          Quarto notebook ecosystem
+│   │       └── atac.lua            ATAC HTTP client
+│   └── kickstart/
+│       ├── health.lua              :checkhealth module
+│       └── plugins/
+│           ├── debug.lua           DAP (Go debugging)
+│           ├── lint.lua            nvim-lint config
+│           ├── gitsigns.lua        Git signs + keymaps
+│           ├── neo-tree.lua        File explorer
+│           ├── autopairs.lua       Auto-close brackets
+│           └── indent_line.lua     Indent guides
+├── queries/caddyfile/              Custom Caddyfile highlight/injection queries
+├── tree-sitter/caddyfile/          Patched Caddyfile grammar (see below)
+└── doc/
+    └── kickstart.txt               Vim help file
 ```
+
+### How Files Are Loaded
+
+- `init.lua` bootstraps lazy.nvim and defines the core plugin specs inline
+- Kickstart modules loaded via individual `require` calls (e.g. `require 'kickstart.plugins.debug'`)
+- `{ import = 'custom.plugins' }` auto-imports all files in `lua/custom/plugins/`
+- Each custom plugin file returns a lazy.nvim plugin spec table (or list of tables)
+- `lua/pg_format_wrapper.lua` is a plain module loaded via `require('pg_format_wrapper')` by conform
+
+### Adding a New Plugin
+
+1. Create `lua/custom/plugins/your-plugin.lua`
+2. Return a lazy.nvim spec:
+   ```lua
+   return {
+     'author/plugin-name',
+     opts = { ... },
+   }
+   ```
+3. Restart Neovim — lazy auto-discovers it via the `import` directive
+
+### Adding a New Formatter
+
+1. Edit `lua/custom/plugins/conform.lua`
+2. Add filetype mapping in `formatters_by_ft`
+3. Add formatter definition in `formatters` (or rely on conform's built-in definitions)
+4. Ensure the formatter binary is installed (Mason or system)
+
+### Adding a New LSP Server
+
+1. Add the server config to the `servers` table in `init.lua` (~line 560)
+2. Add `root_markers` for project detection
+3. Mason auto-installs it via `mason-tool-installer`
+
+## Code Style
+
+- Lua formatted with [StyLua](https://github.com/JohnnyMorganz/StyLua) (`.stylua.toml`)
+- 2-space indent, single quotes preferred, 160 column width
+- CI enforces formatting via `.github/workflows/stylua.yml`
 
 ## Caddyfile Tree-sitter Grammar
 
 A patched local fork of [caddyserver/tree-sitter-caddyfile](https://github.com/caddyserver/tree-sitter-caddyfile) lives in `tree-sitter/caddyfile/`. Changes from upstream:
 
-- **layer4 / caddy-l4 support** -- `address_block` + `listener_address` rules for `:port`, `ip:port`, `host:port` blocks
-- **Digits in directive names** -- names like `layer4`, `h2c` parse as single tokens
-- **Zero-argument matcher directives** -- `@ssh ssh` and `@tls tls` work without extra arguments
-- **Standalone `@` argument** -- bare `@` as root-domain marker in `dynamic_dns domains` blocks
-- **Single-token `@name`** -- resolves conflicts between named matchers and bare `@`
+- **layer4 / caddy-l4 support** — `address_block` + `listener_address` rules for `:port`, `ip:port`, `host:port` blocks
+- **Digits in directive names** — names like `layer4`, `h2c` parse as single tokens
+- **Zero-argument matcher directives** — `@ssh ssh` and `@tls tls` work without extra arguments
+- **Standalone `@` argument** — bare `@` as root-domain marker in `dynamic_dns domains` blocks
+- **Single-token `@name`** — resolves conflicts between named matchers and bare `@`
 - Extended placeholder, directive, and argument regex for Caddy-specific syntax
 - Bare IPv6 addresses and CIDRs in subdirective contexts like `trusted_proxies`
 
