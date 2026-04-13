@@ -38,6 +38,12 @@ return {
           split = 'right',
         },
       },
+      markdown = {
+        headings = {
+          heading_1 = { sign = '' },
+          heading_2 = { sign = '' },
+        },
+      },
     },
   },
   {
