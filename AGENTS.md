@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Personal Neovim config. Fork of [nvim-lua/kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), targeting **Neovim 0.12+**. Single `init.lua` (~900 lines) for core config, modular plugin specs in `lua/custom/plugins/` and `lua/kickstart/plugins/`.
+Personal Neovim config. Fork of [nvim-lua/kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim), targeting **Neovim 0.12+**. Single `init.lua` (~935 lines) for core config, modular plugin specs in `lua/custom/plugins/` and `lua/kickstart/plugins/`.
 
 ## Architecture
 
@@ -29,8 +29,9 @@ Each custom plugin file must return a lazy.nvim spec table or list of tables. Do
 ### Key Dependencies
 
 - **Plugin manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) (bootstrapped in init.lua)
-- **LSP**: Native `vim.lsp` (Neovim 0.12), configured via `vim.lsp.config()` — NOT nvim-lspconfig
-- **Mason**: Auto-installs LSP servers, formatters, linters via `mason-tool-installer`
+- **LSP**: Native `vim.lsp` (Neovim 0.12), configured via `vim.lsp.config()` — NOT nvim-lspconfig (removed)
+- **Mason**: Auto-installs LSP servers, formatters, linters via `mason-tool-installer` (static name mapping, no mason-lspconfig)
+- **Auto-pairs**: mini.pairs (part of mini.nvim, NOT nvim-autopairs)
 - **Formatting**: conform.nvim (`lua/custom/plugins/conform.lua`)
 - **Linting**: nvim-lint (`lua/kickstart/plugins/lint.lua`)
 - **Completion**: blink.cmp (NOT nvim-cmp)
@@ -49,7 +50,7 @@ Each custom plugin file must return a lazy.nvim spec table or list of tables. Do
 | What | Where |
 |------|-------|
 | New plugin | `lua/custom/plugins/<name>.lua` — return a lazy spec |
-| New LSP server | `servers` table in `init.lua` (~line 560) |
+| New LSP server | `servers` table in `init.lua` (~line 555) + add Mason name to `mason_names` table (~line 685) |
 | New formatter | `lua/custom/plugins/conform.lua` — add to `formatters_by_ft` and `formatters` |
 | New linter | `lua/kickstart/plugins/lint.lua` |
 | New filetype | `lua/custom/filetype.lua` |
@@ -60,6 +61,19 @@ Each custom plugin file must return a lazy.nvim spec table or list of tables. Do
 - Plugin files: lowercase, hyphen-free (e.g. `opencode.lua` not `open-code.lua`)
 - Formatter names in conform: match the binary name (e.g. `pg_format`, `caddyfile_fmt`)
 - LSP server names: match Mason registry names
+
+## Removed Plugins (native replacements)
+
+These plugins were removed in favour of Neovim 0.12 native features or bundled alternatives:
+
+- **nvim-lspconfig** → native `vim.lsp.config()` + `vim.lsp.enable()`
+- **mason-lspconfig** → static `mason_names` mapping table in `init.lua`
+- **fidget.nvim** → `vim.ui.progress_status()` in mini.statusline
+- **nvim-autopairs** → `mini.pairs` (bundled in mini.nvim)
+- **vim-mdx-js** → treesitter markdown + `mdx_analyzer` LSP
+- **vim-fugitive** → lazygit (Snacks) + gitsigns + diffview
+- **markview.nvim** → native treesitter markdown highlighting
+- **opencode.nvim** → removed (its render-markdown.nvim dep caused heading rendering bugs)
 
 ## SQL Formatting
 
@@ -110,6 +124,7 @@ my_server = {
 },
 ```
 Mason auto-installs if the server name matches a Mason package.
+Also add the Mason package name to `mason_names` table (~line 685) if the lspconfig name differs from the Mason name (e.g. `lua_ls` → `lua-language-server`).
 
 ### Adding a formatter
 In `lua/custom/plugins/conform.lua`:

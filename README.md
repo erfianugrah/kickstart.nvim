@@ -19,18 +19,22 @@ nvim  # Lazy will install all plugins on first launch
 
 ## What's Different From Upstream
 
-Single-file `init.lua` (~900 lines) with these additions on top of kickstart:
+Single-file `init.lua` (~935 lines) with these additions on top of kickstart:
 
 ### Neovim 0.12 Native Features
 
 | Feature | Details |
 |---------|---------|
+| LSP config | Native `vim.lsp.config()` + `vim.lsp.enable()` — no nvim-lspconfig needed |
 | LSP commands | `:LspInfo`, `:LspStop`, `:LspRestart`, `:LspLog` (shims around `vim.lsp.*` API; built-in `:lsp` and `:checkhealth vim.lsp` also work) |
+| LSP progress | `vim.ui.progress_status()` shown in mini.statusline — no fidget.nvim needed |
 | Inlay hints | Enabled by default on attach; `<leader>th` to toggle |
 | Code lens | Enabled via `vim.lsp.codelens.enable()`; `grx` to run (built-in keymap) |
 | Treesitter selection | `v_an` / `v_in` for incremental node selection (built-in) |
 | Undo tree | `:Undotree` (built-in plugin); `<leader>T` to toggle |
 | vim.snippet | Native snippet engine used by blink.cmp (LuaSnip removed) |
+| Auto-pairs | `mini.pairs` (bundled in mini.nvim) — no separate autopairs plugin |
+| Mason names | Static mapping table — no mason-lspconfig dependency |
 
 ### LSP Servers (auto-installed via Mason)
 
@@ -98,27 +102,20 @@ SQL uses a two-stage pipeline via conform.nvim:
 | **neo-tree** | File explorer | `\` toggle |
 | **trouble.nvim** | Diagnostics panel | `<leader>xx` all diagnostics, `<leader>xX` buffer diagnostics, `<leader>cs` symbols |
 | **gitsigns.nvim** | Git signs + hunks | `]c`/`[c` navigate hunks, `<leader>hs` stage, `<leader>hr` reset, `<leader>hp` preview |
-| **vim-fugitive** | Git commands | `:Git`, `:Gvdiffsplit`, etc. |
 | **diffview.nvim** | Git diff viewer | `:DiffviewOpen`, `:DiffviewFileHistory` |
 | **which-key.nvim** | Keymap hints | Appears after pressing `<leader>` (0ms delay) |
 | **todo-comments** | TODO/FIXME highlights | `:TodoTelescope` to search |
-| **mini.nvim** | Textobjects, surround, statusline | `va)`, `saiw)`, `sd'`, etc. |
+| **mini.nvim** | Textobjects, surround, statusline, auto-pairs | `va)`, `saiw)`, `sd'`, auto-close brackets |
 | **nvim-dap** | Debug Adapter Protocol | `<F5>` continue, `<F1>` step into, `<F2>` step over, `<leader>b` breakpoint |
 | **conform.nvim** | Formatting | `<leader>f` format, auto-format on save |
 | **nvim-lint** | Linting | Auto-runs on save |
 | **indent-blankline** | Indent guides | Visual only |
-| **nvim-autopairs** | Auto-close brackets | Auto |
 | **vim-tmux-navigator** | Tmux-aware splits | `<C-h/j/k/l>` navigate splits + tmux panes |
 | **gen.nvim** | Ollama AI | Via Cloudflare Access tunnel |
-| **markview.nvim** | Markdown preview | In-buffer rendering |
 | **twilight + zen-mode** | Focus mode | `:ZenMode`, `:Twilight` |
-| **opencode.nvim** | OpenCode AI assistant | `<leader>o` prefix |
 | **quarto-nvim** | Quarto notebooks | Otter LSP, vim-slime REPL |
 | **guess-indent.nvim** | Auto-detect indent | Auto |
-| **vim-mdx-js** | MDX syntax | Auto |
 | **tokyonight.nvim** | Colorscheme | `tokyonight-night` |
-| **fidget.nvim** | LSP progress indicator | Visual only |
-| **nvim-lspconfig** | Mason ↔ LSP name mapping | (no direct usage; Mason integration) |
 | **highlight-colors** | Color previews | Tailwind + named colors |
 | **markdown-preview** | Browser markdown preview | `:MarkdownPreview` |
 | **vim-pencil** | Soft/hard prose wrapping | `:Pencil`, `:PencilToggle` |
@@ -230,7 +227,7 @@ Defined in `lua/custom/filetype.lua`:
 
 ```
 ~/.config/nvim/
-├── init.lua                        Main config (~900 lines)
+├── init.lua                        Main config (~935 lines)
 ├── AGENTS.md                       AI agent guidelines
 ├── .stylua.toml                    StyLua formatter config
 ├── .gitignore
@@ -244,7 +241,6 @@ Defined in `lua/custom/filetype.lua`:
 │   │       ├── init.lua            Extra plugins (tmux-nav, trouble, zen-mode, etc.)
 │   │       ├── conform.lua         Formatter config (conform.nvim)
 │   │       ├── caddyfile.lua       Caddyfile treesitter + filetype
-│   │       ├── opencode.lua        OpenCode AI plugin
 │   │       ├── quarto.lua          Quarto notebook ecosystem
 │   │       └── atac.lua            ATAC HTTP client
 │   └── kickstart/
@@ -254,7 +250,6 @@ Defined in `lua/custom/filetype.lua`:
 │           ├── lint.lua            nvim-lint config
 │           ├── gitsigns.lua        Git signs + keymaps
 │           ├── neo-tree.lua        File explorer
-│           ├── autopairs.lua       Auto-close brackets
 │           └── indent_line.lua     Indent guides
 ├── queries/caddyfile/              Custom Caddyfile highlight/injection queries
 ├── tree-sitter/caddyfile/          Patched Caddyfile grammar (see below)
