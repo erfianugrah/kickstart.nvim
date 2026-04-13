@@ -26,28 +26,28 @@ return {
   {
     'OXY2DEV/markview.nvim',
     lazy = false,
-    opts = {
-      preview = {
-        filetypes = { 'markdown', 'quarto', 'rmd', 'typst', 'mdx' },
-        hybrid_modes = { 'n' },
-        linewise_hybrid_mode = true,
-        edit_range = { 1, 1 },
-        map_gx = true,
-        icon_provider = 'devicons',
-        splitview_winopts = {
-          split = 'right',
+    opts = function()
+      local presets = require 'markview.presets'
+      return {
+        preview = {
+          filetypes = { 'markdown', 'quarto', 'rmd', 'typst', 'mdx' },
+          hybrid_modes = { 'n' },
+          linewise_hybrid_mode = true,
+          edit_range = { 1, 1 },
+          map_gx = true,
+          icon_provider = 'devicons',
+          splitview_winopts = {
+            split = 'right',
+          },
         },
-      },
-      markdown = {
-        headings = {
-          heading_1 = { sign = '' },
-          heading_2 = { sign = '' },
+        markdown = {
+          headings = presets.headings.glow,
+          code_blocks = {
+            sign = false,
+          },
         },
-        code_blocks = {
-          sign = false,
-        },
-      },
-    },
+      }
+    end,
   },
   {
     'preservim/vim-pencil',
