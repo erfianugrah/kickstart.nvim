@@ -23,32 +23,7 @@ return {
     end,
     ft = { 'markdown' },
   },
-  {
-    'OXY2DEV/markview.nvim',
-    lazy = false,
-    opts = function()
-      local presets = require 'markview.presets'
-      return {
-        preview = {
-          filetypes = { 'markdown', 'quarto', 'rmd', 'typst', 'mdx' },
-          hybrid_modes = { 'n' },
-          linewise_hybrid_mode = true,
-          edit_range = { 1, 1 },
-          map_gx = true,
-          icon_provider = 'devicons',
-          splitview_winopts = {
-            split = 'right',
-          },
-        },
-        markdown = {
-          headings = presets.headings.glow,
-          code_blocks = {
-            sign = false,
-          },
-        },
-      }
-    end,
-  },
+  -- markview.nvim removed — heading icons had unresolvable width mismatch in WezTerm/WSL
   {
     'preservim/vim-pencil',
     cmd = { 'Pencil', 'PencilOff', 'PencilToggle', 'PencilSoft', 'PencilHard' },
