@@ -313,8 +313,8 @@ require('lazy').setup({
   },
 
   { 'NMAC427/guess-indent.nvim', opts = {} }, -- Detect tabstop and shiftwidth automatically
-  'jxnblk/vim-mdx-js',
-  'tpope/vim-fugitive',
+  -- vim-mdx-js removed: treesitter markdown + mdx_analyzer LSP cover MDX
+  -- vim-fugitive removed: lazygit (Snacks) + gitsigns + diffview cover git workflows
 
   { -- Labeled jump motions for s/S and enhanced f/F/t/T
     'folke/flash.nvim',
@@ -452,15 +452,12 @@ require('lazy').setup({
     end,
   },
 
-  -- LSP Plugins
+  -- LSP + Mason (native vim.lsp.config/enable — no nvim-lspconfig needed)
   {
-    -- Main LSP Configuration
-    'neovim/nvim-lspconfig',
+    'mason-org/mason.nvim',
+    opts = {},
     dependencies = {
-      { 'mason-org/mason.nvim', opts = {} },
-      'mason-org/mason-lspconfig.nvim', -- provides lspconfig<->Mason name mapping
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function()
       -- Nvim 0.12: The old nvim-lspconfig commands (:LspInfo, :LspStart, :LspStop,
@@ -685,8 +682,38 @@ require('lazy').setup({
         },
       }
 
+      -- lspconfig name -> Mason package name (replaces mason-lspconfig dependency)
+      local mason_names = {
+        astro = 'astro-language-server',
+        cssls = 'css-lsp',
+        jsonls = 'json-lsp',
+        graphql = 'graphql-language-service-cli',
+        yamlls = 'yaml-language-server',
+        bashls = 'bash-language-server',
+        gopls = 'gopls',
+        pyright = 'pyright',
+        terraformls = 'terraform-ls',
+        ts_ls = 'typescript-language-server',
+        denols = 'deno',
+        tailwindcss = 'tailwindcss-language-server',
+        docker_compose_language_service = 'docker-compose-language-service',
+        dockerls = 'dockerfile-language-server',
+        mdx_analyzer = 'mdx-analyzer',
+        sqlls = 'sqlls',
+        ansiblels = 'ansible-language-server',
+        jqls = 'jq-lsp',
+        rust_analyzer = 'rust-analyzer',
+        markdown_oxide = 'markdown-oxide',
+        clangd = 'clangd',
+        html = 'html-lsp',
+        lua_ls = 'lua-language-server',
+      }
+
       -- Auto-install servers + extra tools via Mason (:Mason to manage)
-      local ensure_installed = vim.tbl_keys(servers or {})
+      local ensure_installed = {}
+      for name, _ in pairs(servers) do
+        table.insert(ensure_installed, mason_names[name] or name)
+      end
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'markdownlint',
@@ -697,7 +724,10 @@ require('lazy').setup({
         'prettier',
       })
 
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-tool-installer').setup {
+        ensure_installed = ensure_installed,
+        integrations = { ['mason-lspconfig'] = false },
+      }
 
       for name, config in pairs(servers) do
         vim.lsp.config(name, config)
@@ -763,6 +793,9 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- Auto-close brackets/quotes (replaces nvim-autopairs)
+      require('mini.pairs').setup()
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
@@ -770,11 +803,13 @@ require('lazy').setup({
       -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
+      -- Cursor location + LSP progress (replaces fidget.nvim)
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function() return '%2l:%-2v' end
+      statusline.section_location = function()
+        local progress = vim.ui.progress_status()
+        if progress and progress ~= '' then return progress .. ' %2l:%-2v' end
+        return '%2l:%-2v'
+      end
 
       -- ... and there is more!
       --  Check out: https://github.com/nvim-mini/mini.nvim
@@ -869,7 +904,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
+  -- autopairs removed: replaced by mini.pairs (already in mini.nvim)
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns',
 
