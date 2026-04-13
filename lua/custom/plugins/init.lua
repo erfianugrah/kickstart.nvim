@@ -43,6 +43,9 @@ return {
           heading_1 = { sign = '' },
           heading_2 = { sign = '' },
         },
+        code_blocks = {
+          sign = false,
+        },
       },
     },
   },
