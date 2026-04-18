@@ -837,7 +837,7 @@ require('lazy').setup({
         'bash', 'c', 'html', 'lua', 'diff', 'luadoc',
         'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
         'astro', 'css', 'csv', 'javascript', 'json',
-        'terraform', 'sql', 'typescript', 'yaml',
+        'terraform', 'sql', 'typescript', 'tsx', 'yaml',
         'mermaid', 'xml', 'http', 'graphql',
         'go', 'gomod', 'gowork', 'gotmpl',
         'python', 'rust', 'dockerfile', 'toml',
