@@ -29,7 +29,7 @@ Each custom plugin file must return a lazy.nvim spec table or list of tables. Do
 ### Key Dependencies
 
 - **Plugin manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) (bootstrapped in init.lua)
-- **LSP**: Native `vim.lsp` (Neovim 0.12), configured via `vim.lsp.config()` — NOT nvim-lspconfig (removed)
+- **LSP**: Native `vim.lsp` (Neovim 0.11+), configured via `vim.lsp.config()` / `vim.lsp.enable()`. `nvim-lspconfig` is included as a **data-only** dep — it ships `lsp/<name>.lua` files Neovim auto-discovers via runtimepath, providing default `cmd`/`filetypes`/`root_markers` for ~250 servers. Neovim itself does NOT bundle these configs.
 - **Mason**: Auto-installs LSP servers, formatters, linters via `mason-tool-installer` (static name mapping, no mason-lspconfig)
 - **Auto-pairs**: mini.pairs (part of mini.nvim, NOT nvim-autopairs)
 - **Formatting**: conform.nvim (`lua/custom/plugins/conform.lua`)
@@ -66,7 +66,6 @@ Each custom plugin file must return a lazy.nvim spec table or list of tables. Do
 
 These plugins were removed in favour of Neovim 0.12 native features or bundled alternatives:
 
-- **nvim-lspconfig** → native `vim.lsp.config()` + `vim.lsp.enable()`
 - **mason-lspconfig** → static `mason_names` mapping table in `init.lua`
 - **fidget.nvim** → `vim.ui.progress_status()` in mini.statusline
 - **nvim-autopairs** → `mini.pairs` (bundled in mini.nvim)

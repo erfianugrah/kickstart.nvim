@@ -452,14 +452,22 @@ require('lazy').setup({
     end,
   },
 
-  -- LSP + Mason (native vim.lsp.config/enable — no nvim-lspconfig needed)
+  -- LSP + Mason — uses native vim.lsp.config/enable API (Nvim 0.11+).
+  -- nvim-lspconfig is a *data-only* dependency: it ships lsp/<name>.lua
+  -- files that Neovim auto-discovers via runtimepath, providing default
+  -- cmd/filetypes/root_markers for ~250 servers. Neovim itself does NOT
+  -- bundle these configs — that's nvim-lspconfig's role.
   {
     'mason-org/mason.nvim',
-    opts = {},
     dependencies = {
+      'neovim/nvim-lspconfig', -- data-only: ships lsp/<name>.lua server defaults
       'WhoIsSethDaniel/mason-tool-installer.nvim',
     },
     config = function()
+      -- mason.setup() prepends ~/.local/share/nvim/mason/bin to vim.env.PATH
+      -- so LSP servers and formatters installed via Mason resolve.
+      require('mason').setup {}
+
       -- Nvim 0.12: The old nvim-lspconfig commands (:LspInfo, :LspStart, :LspStop,
       -- :LspRestart, :LspLog) were removed. Neovim 0.12 provides the built-in
       -- `:lsp` command and `:checkhealth vim.lsp` for interactive management.
