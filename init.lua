@@ -283,6 +283,7 @@ require('lazy').setup({
       quickfile = { enabled = true }, -- Faster initial file render before plugins load
       scratch = { enabled = true }, -- Persistent scratch buffers
       words = { enabled = true }, -- Auto-highlight LSP references, jump with ]] / [[
+      image = { enabled = true }, -- Inline image previews (PNG/JPG/GIF/SVG/PDF/HEIC/etc) via Kitty graphics protocol
     },
     keys = {
       { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
