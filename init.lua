@@ -849,7 +849,7 @@ require('lazy').setup({
         'terraform', 'sql', 'typescript', 'tsx', 'yaml',
         'mermaid', 'xml', 'http', 'graphql',
         'go', 'gomod', 'gowork', 'gotmpl',
-        'python', 'rust', 'dockerfile', 'toml',
+        'python', 'rust', 'dockerfile', 'toml', 'ssh_config',
       }
 
       -- Enable treesitter highlighting for all filetypes with a parser.
