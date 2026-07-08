@@ -13,7 +13,7 @@ return {
   ---@module 'conform'
   ---@type conform.setupOpts
   opts = {
-    notify_on_error = false,
+    notify_on_error = true,
     format_on_save = function(bufnr)
       local disable_filetypes = { c = true, cpp = true }
       if disable_filetypes[vim.bo[bufnr].filetype] then
@@ -27,23 +27,34 @@ return {
     end,
     formatters_by_ft = {
       lua = { 'stylua' },
-      javascript = { 'denols', 'prettier', stop_after_first = true },
-      typescript = { 'denols', 'prettier', stop_after_first = true },
-      typescriptreact = { 'denols', 'prettier', stop_after_first = true },
-      javascriptreact = { 'denols', 'prettier', stop_after_first = true },
-      svelte = { 'denols', 'prettier', stop_after_first = true },
-      astro = { 'prettier' },
-      html = { 'prettier' },
-      css = { 'prettier' },
-      json = { 'prettier' },
-      markdown = { 'prettier' },
+      javascript = { 'denols', 'prettierd', 'prettier', stop_after_first = true },
+      typescript = { 'denols', 'prettierd', 'prettier', stop_after_first = true },
+      typescriptreact = { 'denols', 'prettierd', 'prettier', stop_after_first = true },
+      javascriptreact = { 'denols', 'prettierd', 'prettier', stop_after_first = true },
+      svelte = { 'denols', 'prettierd', 'prettier', stop_after_first = true },
+      astro = { 'prettierd', 'prettier', stop_after_first = true },
+      html = { 'prettierd', 'prettier', stop_after_first = true },
+      css = { 'prettierd', 'prettier', stop_after_first = true },
+      json = { 'prettierd', 'prettier', stop_after_first = true },
+      markdown = { 'prettierd', 'prettier', stop_after_first = true },
       sql = { 'pg_format', 'pg_format_fix' },
       caddyfile = { 'caddyfile_fmt' },
     },
     formatters = {
+      -- prettierd (daemon) is primary: no ~200ms node cold-start per save, and it
+      -- does NOT silently skip .gitignore'd files the way the prettier CLI does.
+      prettierd = {
+        command = 'prettierd',
+        args = { '$FILENAME' },
+        stdin = true,
+      },
+      -- prettier CLI fallback (used only if the prettierd daemon isn't on PATH).
+      -- --ignore-path /dev/null: prettier 3.x consults .gitignore by default and
+      -- no-ops on gitignored files (e.g. secret-bearing *.profile.json). We're
+      -- actively editing the buffer, so format regardless of gitignore status.
       prettier = {
         command = 'prettier',
-        args = { '--stdin-filepath', '$FILENAME' },
+        args = { '--ignore-path', '/dev/null', '--stdin-filepath', '$FILENAME' },
         stdin = true,
       },
       denols = {

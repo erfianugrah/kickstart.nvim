@@ -111,6 +111,14 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
+-- tmux rewrites TERM_PROGRAM to 'tmux' and strips WEZTERM_*, so Snacks.image
+-- can't auto-detect wezterm. Force it (we only ever run in wezterm).
+vim.env.SNACKS_WEZTERM = 'true'
+-- WSL boundary: nvim runs in WSL, wezterm.exe runs on Windows, so they don't
+-- share a filesystem. Force 'remote' mode so Snacks streams image bytes inline
+-- (kitty t=d) instead of sending a WSL path wezterm.exe can't open (t=f).
+vim.env.SNACKS_SSH = 'true'
+
 -- Load custom filetype detection (mdx, tfvars, docker-compose, ansible, etc.)
 require 'custom.filetype'
 
@@ -212,7 +220,9 @@ vim.diagnostic.config {
   virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
-  jump = { float = true },
+  jump = {
+    on_jump = function(_, bufnr) vim.diagnostic.open_float { bufnr = bufnr, scope = 'cursor', focus = false } end,
+  },
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -283,7 +293,9 @@ require('lazy').setup({
       quickfile = { enabled = true }, -- Faster initial file render before plugins load
       scratch = { enabled = true }, -- Persistent scratch buffers
       words = { enabled = true }, -- Auto-highlight LSP references, jump with ]] / [[
-      image = { enabled = true }, -- Inline image previews (PNG/JPG/GIF/SVG/PDF/HEIC/etc) via Kitty graphics protocol
+      -- Image previews (PNG/JPG/GIF/SVG/PDF/HEIC/etc) via Kitty graphics protocol.
+      -- wezterm has no unicode-placeholder support, so inline can't work: use float.
+      image = { enabled = true, doc = { inline = false, float = true } },
     },
     keys = {
       { '<leader>gg', function() Snacks.lazygit() end, desc = 'Lazygit' },
